@@ -33,9 +33,6 @@ parse_args() {
       *)
         RESOURCE_NAME=$1
         SCOPES=$2
-        if [ "$SCOPES" == "" ]; then
-          SCOPES="configure"
-        fi
         ;;
     esac
   else
@@ -76,15 +73,17 @@ _configure_aws_cli () {
 
 _configure_aws_ecr () {
   # TODO: complete aws ecr login script
+
   echo "Successfully configured aws ecr."
 }
 
 init() {
-  echo "Setting up $SCOPES for resource $RESOURCE_NAME."
-
-  if has_scope "configure"; then
-    _configure_aws_cli
+  echo "Setting up tools for $RESOURCE_NAME."
+  if [ ! -z $SCOPES ]; then
+    echo "Found scopes: $SCOPES"
   fi
+
+  _configure_aws_cli
 
   if has_scope "ecr"; then
     _configure_aws_ecr
