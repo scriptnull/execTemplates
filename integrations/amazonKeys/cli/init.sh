@@ -5,12 +5,12 @@ readonly SCRIPT_NAME="$( basename "$0" )"
 readonly ARGS=("$@")
 
 export RESOURCE_NAME=""
-export SCOPE=""
+export SCOPES=""
 
 print_help() {
   echo "
   Usage:
-    $SCRIPT_NAME <resource_name> [scope]
+    $SCRIPT_NAME <resource_name> [scopes]
   "
 }
 
@@ -24,9 +24,9 @@ parse_args() {
         ;;
       *)
         RESOURCE_NAME=$1
-        SCOPE=$2
-        if [ "$SCOPE" == "" ]; then
-          SCOPE="configure"
+        SCOPES=$2
+        if [ "$SCOPES" == "" ]; then
+          SCOPES="configure"
         fi
         ;;
     esac
@@ -36,8 +36,22 @@ parse_args() {
   fi
 }
 
+configure_aws_cli () {
+  AWS_ACCESS_KEY="$( shipctl get_integration_resource_field $RESOURCE_NAME "accessKey" )"
+  AWS_SECRET_KEY="$( shipctl get_integration_resource_field $RESOURCE_NAME "secretKey" )"
+
+  RESOURCE_VERSION_PATH="$(shipctl get_resource_meta $RESOURCE_NAME)/version.json"
+  AWS_REGION="$( shipctl get_json_value $RESOURCE_VERSION_PATH "propertyBag.yml.pointer.region" )"
+
+  aws configure set aws_access_key_id $AWS_ACCESS_KEY
+  aws configure set aws_secret_access_key $AWS_SECRET_KEY
+  aws configure set region $AWS_REGION
+}
+
 init() {
-  echo "Setting up $SCOPE for resource $RESOURCE_NAME."
+  echo "Setting up $SCOPES for resource $RESOURCE_NAME."
+
+  configure_aws_cli
 }
 
 main() {
