@@ -1,47 +1,26 @@
 #!/bin/bash -e
-readonly IFS=$'\n\t'
-readonly ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-readonly SCRIPT_NAME="$( basename "$0" )"
-readonly ARGS=("$@")
 
-export RESOURCE_NAME=""
-export SCOPES=""
+source "$(dirname $0)/../../common/envs.sh"
+source "$(dirname $0)/../../common/utils.sh"
 
-print_help() {
+RESOURCE_NAME=""
+SCOPES=""
+AWS_ACCESS_KEY=""
+AWS_SECRET_KEY=""
+RESOURCE_VERSION_PATH=""
+AWS_REGION=""
+
+help() {
   echo "
   Usage:
     $SCRIPT_NAME <resource_name> [scopes]
   "
 }
 
-is_empty () {
-  [ -z "$1" ] || [ "$1" == "null" ]
-}
+check_params() {
+  RESOURCE_NAME=${ARGS[0]}
+  SCOPES=${ARGS[1]}
 
-has_scope () {
-  [[ $SCOPES =~ (^|,)$1(,|$) ]]
-}
-
-parse_args() {
-  if [ "$#" -gt 0 ]; then
-    key="$1"
-    case "$key" in
-      --help)
-        print_help
-        exit 0
-        ;;
-      *)
-        RESOURCE_NAME=$1
-        SCOPES=$2
-        ;;
-    esac
-  else
-    print_help
-    exit 1
-  fi
-}
-
-check_and_set_vars () {
   AWS_ACCESS_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "accessKey" )"
   AWS_SECRET_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "secretKey" )"
   RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
@@ -63,50 +42,45 @@ check_and_set_vars () {
   fi
 }
 
-_configure_aws_cli () {
+init_scope_configure() {
   aws configure set aws_access_key_id "$AWS_ACCESS_KEY"
   aws configure set aws_secret_access_key "$AWS_SECRET_KEY"
   aws configure set region "$AWS_REGION"
-
-  echo "Successfully configured aws cli."
 }
 
-_configure_aws_ecr () {
-  local docker_version="$( docker version --format \{\{.Server.Version\}\} )"
-  local docker_major_version=$(echo "$docker_version" | awk -F '.' '{print $1}')
-  local login_email_removed_version=17
-
-  if [ "$docker_major_version" -ge "$login_email_removed_version" ]; then
-    aws ecr get-login --no-include-email > /tmp/ecr-docker-login.sh
+init_scope_ecr() {
+  if is_docker_email_deprecated; then
+    docker_login_cmd=$( aws ecr get-login --no-include-email )
   else
-    aws ecr get-login > /tmp/ecr-docker-login.sh
+    docker_login_cmd=$( aws ecr get-login )
   fi
 
-  chmod +x /tmp/ecr-docker-login.sh
-  /tmp/ecr-docker-login.sh
-
-  rm /tmp/ecr-docker-login.sh
-
-  echo "Successfully configured aws ecr."
+  echo "$docker_login_cmd" | bash
 }
 
 init() {
-  echo "Setting up tools for $RESOURCE_NAME."
-  if [ ! -z "$SCOPES" ]; then
-    echo "Found scopes: $SCOPES"
-  fi
-
-  _configure_aws_cli
-
-  if has_scope "ecr"; then
-    _configure_aws_ecr
+  check_params
+  init_scope_configure
+  if csv_has_value "$SCOPES" "ecr"; then
+    init_scope_ecr
   fi
 }
 
 main() {
-  parse_args "${ARGS[@]}"
-  check_and_set_vars
-  init
+  if [[ "${#ARGS[@]}" -gt 0 ]]; then
+    case "${ARGS[0]}" in
+      --help)
+        help
+        exit 0
+        ;;
+      *)
+        init
+        ;;
+    esac
+  else
+    help
+    exit 1
+  fi
 }
 
 main
