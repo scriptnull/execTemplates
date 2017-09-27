@@ -15,7 +15,7 @@ print_help() {
 }
 
 is_empty () {
-  [ -z $1 ] || [ $1 == "null" ]
+  [ -z "$1" ] || [ "$1" == "null" ]
 }
 
 has_scope () {
@@ -42,10 +42,10 @@ parse_args() {
 }
 
 check_and_set_vars () {
-  AWS_ACCESS_KEY="$( shipctl get_integration_resource_field $RESOURCE_NAME "accessKey" )"
-  AWS_SECRET_KEY="$( shipctl get_integration_resource_field $RESOURCE_NAME "secretKey" )"
-  RESOURCE_VERSION_PATH="$(shipctl get_resource_meta $RESOURCE_NAME)/version.json"
-  AWS_REGION="$( shipctl get_json_value $RESOURCE_VERSION_PATH "propertyBag.yml.pointer.region" )"
+  AWS_ACCESS_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "accessKey" )"
+  AWS_SECRET_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "secretKey" )"
+  RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
+  AWS_REGION="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.region" )"
 
   if is_empty "$AWS_ACCESS_KEY"; then
     echo "Missing 'accessKey' value in $RESOURCE_NAME's integration."
@@ -64,22 +64,35 @@ check_and_set_vars () {
 }
 
 _configure_aws_cli () {
-  aws configure set aws_access_key_id $AWS_ACCESS_KEY
-  aws configure set aws_secret_access_key $AWS_SECRET_KEY
-  aws configure set region $AWS_REGION
+  aws configure set aws_access_key_id "$AWS_ACCESS_KEY"
+  aws configure set aws_secret_access_key "$AWS_SECRET_KEY"
+  aws configure set region "$AWS_REGION"
 
   echo "Successfully configured aws cli."
 }
 
 _configure_aws_ecr () {
-  # TODO: complete aws ecr login script
+  local docker_version="$( docker version --format \{\{.Server.Version\}\} )"
+  local docker_major_version=$(echo "$docker_version" | awk -F '.' '{print $1}')
+  local login_email_removed_version=17
+
+  if [ "$docker_major_version" -ge "$login_email_removed_version" ]; then
+    aws ecr get-login --no-include-email > /tmp/ecr-docker-login.sh
+  else
+    aws ecr get-login > /tmp/ecr-docker-login.sh
+  fi
+
+  chmod +x /tmp/ecr-docker-login.sh
+  /tmp/ecr-docker-login.sh
+
+  rm /tmp/ecr-docker-login.sh
 
   echo "Successfully configured aws ecr."
 }
 
 init() {
   echo "Setting up tools for $RESOURCE_NAME."
-  if [ ! -z $SCOPES ]; then
+  if [ ! -z "$SCOPES" ]; then
     echo "Found scopes: $SCOPES"
   fi
 
