@@ -1,0 +1,5 @@
+language: none
+build:
+  ci:
+    - apt-get install -y shellcheck
+    - shellcheck -s bash $(find ./integrations -name "*.sh")
