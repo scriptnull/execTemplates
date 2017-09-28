@@ -1,7 +1,9 @@
 #!/bin/bash -e
 
-source "$(dirname $0)/../../common/envs.sh"
-source "$(dirname $0)/../../common/utils.sh"
+# shellcheck source=integrations/common/envs.sh
+source "$(dirname "$0")/../../common/envs.sh"
+# shellcheck source=integrations/common/utils.sh
+source "$(dirname "$0")/../../common/utils.sh"
 
 RESOURCE_NAME=""
 SCOPES=""
