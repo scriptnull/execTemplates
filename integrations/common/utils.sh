@@ -6,7 +6,7 @@ is_empty() {
   [[ -z "$1" ]] || [[ "$1" == "null" ]]
 }
 
-# csv_has_value checks if a `value` is present in a `csv` comma separated value string
+# csv_has_value checks if a `value` is present in a `csv` (comma separated value) string
 # args: csv(string), value(string)
 csv_has_value() {
   local csv=$1
