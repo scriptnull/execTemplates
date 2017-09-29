@@ -3,9 +3,12 @@
 readonly ROOT_DIR="$(dirname "$0")/../../.."
 readonly COMMON_DIR="$ROOT_DIR/integrations/common"
 readonly HELPERS_PATH="$COMMON_DIR/_helpers.sh"
+readonly LOGGER_PATH="$COMMON_DIR/_logger.sh"
 
 # shellcheck source=integrations/common/_helpers.sh
 source "$HELPERS_PATH"
+# shellcheck source=integrations/common/_logger.sh
+source "$LOGGER_PATH"
 
 export RESOURCE_NAME=""
 export SCOPES=""
@@ -22,6 +25,8 @@ help() {
 }
 
 check_params() {
+  _log_msg "Checking params"
+
   RESOURCE_NAME=${ARGS[0]}
   SCOPES=${ARGS[1]}
 
@@ -31,28 +36,36 @@ check_params() {
   AWS_REGION="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.region" )"
 
   if _is_empty "$AWS_ACCESS_KEY"; then
-    echo "Missing 'accessKey' value in $RESOURCE_NAME's integration."
+    _log_err "Missing 'accessKey' value in $RESOURCE_NAME's integration."
     exit 1
   fi
 
   if _is_empty "$AWS_SECRET_KEY"; then
-    echo "Missing 'secretKey' value in $RESOURCE_NAME's integration."
+    _log_err "Missing 'secretKey' value in $RESOURCE_NAME's integration."
     exit 1
   fi
 
   if _is_empty "$AWS_REGION"; then
-    echo "Missing 'region' value in pointer section of $RESOURCE_NAME's yml"
+    _log_err "Missing 'region' value in pointer section of $RESOURCE_NAME's yml"
     exit 1
   fi
+
+  _log_success "Successfully checked params"
 }
 
 init_scope_configure() {
+  _log_msg "Initializing scope configure"
+
   aws configure set aws_access_key_id "$AWS_ACCESS_KEY"
   aws configure set aws_secret_access_key "$AWS_SECRET_KEY"
   aws configure set region "$AWS_REGION"
+
+  _log_success "Successfully initialized scope configure"
 }
 
 init_scope_ecr() {
+  _log_msg "Initializing scope ecr"
+
   if _is_docker_email_deprecated; then
     docker_login_cmd=$( aws ecr get-login --no-include-email )
   else
@@ -60,9 +73,12 @@ init_scope_ecr() {
   fi
 
   echo "$docker_login_cmd" | bash
+
+  _log_success "Successfully initialized scope ecr"
 }
 
 init() {
+  _log_grp "Initializing AWS Keys"
   check_params
   init_scope_configure
   if _csv_has_value "$SCOPES" "ecr"; then
