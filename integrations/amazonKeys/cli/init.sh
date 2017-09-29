@@ -1,16 +1,18 @@
 #!/bin/bash -e
 
-# shellcheck source=integrations/common/envs.sh
-source "$(dirname "$0")/../../common/envs.sh"
-# shellcheck source=integrations/common/utils.sh
-source "$(dirname "$0")/../../common/utils.sh"
+readonly ROOT_DIR="$(dirname "$0")/../../.."
+readonly COMMON_DIR="$ROOT_DIR/integrations/common"
+readonly HELPERS_PATH="$COMMON_DIR/_helpers.sh"
 
-RESOURCE_NAME=""
-SCOPES=""
-AWS_ACCESS_KEY=""
-AWS_SECRET_KEY=""
-RESOURCE_VERSION_PATH=""
-AWS_REGION=""
+# shellcheck source=integrations/common/_helpers.sh
+source "$HELPERS_PATH"
+
+export RESOURCE_NAME=""
+export SCOPES=""
+export AWS_ACCESS_KEY=""
+export AWS_SECRET_KEY=""
+export RESOURCE_VERSION_PATH=""
+export AWS_REGION=""
 
 help() {
   echo "
@@ -28,17 +30,17 @@ check_params() {
   RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
   AWS_REGION="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.region" )"
 
-  if is_empty "$AWS_ACCESS_KEY"; then
+  if _is_empty "$AWS_ACCESS_KEY"; then
     echo "Missing 'accessKey' value in $RESOURCE_NAME's integration."
     exit 1
   fi
 
-  if is_empty "$AWS_SECRET_KEY"; then
+  if _is_empty "$AWS_SECRET_KEY"; then
     echo "Missing 'secretKey' value in $RESOURCE_NAME's integration."
     exit 1
   fi
 
-  if is_empty "$AWS_REGION"; then
+  if _is_empty "$AWS_REGION"; then
     echo "Missing 'region' value in pointer section of $RESOURCE_NAME's yml"
     exit 1
   fi
@@ -51,7 +53,7 @@ init_scope_configure() {
 }
 
 init_scope_ecr() {
-  if is_docker_email_deprecated; then
+  if _is_docker_email_deprecated; then
     docker_login_cmd=$( aws ecr get-login --no-include-email )
   else
     docker_login_cmd=$( aws ecr get-login )
@@ -63,7 +65,7 @@ init_scope_ecr() {
 init() {
   check_params
   init_scope_configure
-  if csv_has_value "$SCOPES" "ecr"; then
+  if _csv_has_value "$SCOPES" "ecr"; then
     init_scope_ecr
   fi
 }
