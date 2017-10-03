@@ -1,8 +1,14 @@
 #!/bin/bash -e
-readonly IFS=$'\n\t'
-readonly ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-readonly SCRIPT_NAME="$( basename "$0" )"
-readonly ARGS=("$@")
+
+readonly ROOT_DIR="$(dirname "$0")/../../.."
+readonly COMMON_DIR="$ROOT_DIR/integrations/common"
+readonly HELPERS_PATH="$COMMON_DIR/_helpers.sh"
+readonly LOGGER_PATH="$COMMON_DIR/_logger.sh"
+
+# shellcheck source=integrations/common/_helpers.sh
+source "$HELPERS_PATH"
+# shellcheck source=integrations/common/_logger.sh
+source "$LOGGER_PATH"
 
 export RESOURCE_NAME=""
 export SCOPE=""
@@ -14,35 +20,53 @@ print_help() {
   "
 }
 
-parse_args() {
-  if [ "$#" -gt 0 ]; then
-    key="$1"
-    case "$key" in
-      --help)
-        print_help
-        exit 0
-        ;;
-      *)
-        RESOURCE_NAME=$1
-        SCOPE=$2
-        if [ "$SCOPE" == "" ]; then
-          SCOPE="configure"
-        fi
-        ;;
-    esac
-  else
-    print_help
-    exit 1
+cleanup_scope_configure() {
+  local aws_config_path
+  aws_config_path=~/.aws
+  if [ -d "$aws_config_path" ]; then
+    rm -rf $aws_config_path
   fi
+
+  _log_success "Successfully cleaned up scope configure"
+}
+
+cleanup_scope_ecr() {
+  local docker_config_path
+  docker_config_path=~/.docker
+  if [ -d "$docker_config_path" ]; then
+    rm -rf $docker_config_path
+  fi
+
+  _log_success "Successfully cleaned up scope ecr"
 }
 
 cleanup() {
-  echo "Cleaning up resource $RESOURCE_NAME for scope $SCOPE."
+  RESOURCE_NAME=${ARGS[0]}
+  SCOPES=${ARGS[1]}
+
+  _log_grp "Cleaning up resource $RESOURCE_NAME"
+
+  cleanup_scope_configure
+  if _csv_has_value "$SCOPES" "ecr"; then
+    cleanup_scope_ecr
+  fi
 }
 
 main() {
-  parse_args "${ARGS[@]}"
-  cleanup
+  if [[ "${#ARGS[@]}" -gt 0 ]]; then
+    case "${ARGS[0]}" in
+      --help)
+        help
+        exit 0
+        ;;
+      *)
+        cleanup
+        ;;
+    esac
+  else
+    help
+    exit 1
+  fi
 }
 
 main
