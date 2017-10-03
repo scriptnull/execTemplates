@@ -13,7 +13,7 @@ source "$LOGGER_PATH"
 export RESOURCE_NAME=""
 export SCOPE=""
 
-print_help() {
+help() {
   echo "
   Usage:
     $SCRIPT_NAME <resource_name> [scope]
