@@ -21,6 +21,8 @@ help() {
 }
 
 cleanup_scope_configure() {
+  _log_msg "Cleaning up scope configure"
+
   local aws_config_path
   aws_config_path=~/.aws
   if [ -d "$aws_config_path" ]; then
@@ -31,6 +33,8 @@ cleanup_scope_configure() {
 }
 
 cleanup_scope_ecr() {
+  _log_msg "Cleaning up scope ecr"
+
   local docker_config_path
   docker_config_path=~/.docker
   if [ -d "$docker_config_path" ]; then
