@@ -1,99 +1,106 @@
 #!/bin/bash -e
-readonly IFS=$'\n\t'
-readonly ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-readonly SCRIPT_NAME="$( basename "$0" )"
-readonly ARGS=("$@")
+
+readonly ROOT_DIR="$(dirname "$0")/../../.."
+readonly COMMON_DIR="$ROOT_DIR/integrations/common"
+readonly HELPERS_PATH="$COMMON_DIR/_helpers.sh"
+readonly LOGGER_PATH="$COMMON_DIR/_logger.sh"
+
+# shellcheck source=integrations/common/_helpers.sh
+source "$HELPERS_PATH"
+# shellcheck source=integrations/common/_logger.sh
+source "$LOGGER_PATH"
 
 export RESOURCE_NAME=""
 export SCOPES=""
+export AWS_ACCESS_KEY=""
+export AWS_SECRET_KEY=""
+export RESOURCE_VERSION_PATH=""
+export AWS_REGION=""
 
-print_help() {
+help() {
   echo "
   Usage:
     $SCRIPT_NAME <resource_name> [scopes]
   "
 }
 
-is_empty () {
-  [ -z $1 ] || [ $1 == "null" ]
+check_params() {
+  _log_msg "Checking params"
+
+  RESOURCE_NAME=${ARGS[0]}
+  SCOPES=${ARGS[1]}
+
+  AWS_ACCESS_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "accessKey" )"
+  AWS_SECRET_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "secretKey" )"
+  RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
+  AWS_REGION="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.region" )"
+
+  if _is_empty "$AWS_ACCESS_KEY"; then
+    _log_err "Missing 'accessKey' value in $RESOURCE_NAME's integration."
+    exit 1
+  fi
+
+  if _is_empty "$AWS_SECRET_KEY"; then
+    _log_err "Missing 'secretKey' value in $RESOURCE_NAME's integration."
+    exit 1
+  fi
+
+  if _is_empty "$AWS_REGION"; then
+    _log_err "Missing 'region' value in pointer section of $RESOURCE_NAME's yml"
+    exit 1
+  fi
+
+  _log_success "Successfully checked params"
 }
 
-has_scope () {
-  [[ $SCOPES =~ (^|,)$1(,|$) ]]
+init_scope_configure() {
+  _log_msg "Initializing scope configure"
+
+  aws configure set aws_access_key_id "$AWS_ACCESS_KEY"
+  aws configure set aws_secret_access_key "$AWS_SECRET_KEY"
+  aws configure set region "$AWS_REGION"
+
+  _log_success "Successfully initialized scope configure"
 }
 
-parse_args() {
-  if [ "$#" -gt 0 ]; then
-    key="$1"
-    case "$key" in
-      --help)
-        print_help
-        exit 0
-        ;;
-      *)
-        RESOURCE_NAME=$1
-        SCOPES=$2
-        ;;
-    esac
+init_scope_ecr() {
+  _log_msg "Initializing scope ecr"
+
+  if _is_docker_email_deprecated; then
+    docker_login_cmd=$( aws ecr get-login --no-include-email )
   else
-    print_help
-    exit 1
-  fi
-}
-
-check_and_set_vars () {
-  AWS_ACCESS_KEY="$( shipctl get_integration_resource_field $RESOURCE_NAME "accessKey" )"
-  AWS_SECRET_KEY="$( shipctl get_integration_resource_field $RESOURCE_NAME "secretKey" )"
-  RESOURCE_VERSION_PATH="$(shipctl get_resource_meta $RESOURCE_NAME)/version.json"
-  AWS_REGION="$( shipctl get_json_value $RESOURCE_VERSION_PATH "propertyBag.yml.pointer.region" )"
-
-  if is_empty "$AWS_ACCESS_KEY"; then
-    echo "Missing 'accessKey' value in $RESOURCE_NAME's integration."
-    exit 1
+    docker_login_cmd=$( aws ecr get-login )
   fi
 
-  if is_empty "$AWS_SECRET_KEY"; then
-    echo "Missing 'secretKey' value in $RESOURCE_NAME's integration."
-    exit 1
-  fi
+  echo "$docker_login_cmd" | bash
 
-  if is_empty "$AWS_REGION"; then
-    echo "Missing 'region' value in pointer section of $RESOURCE_NAME's yml"
-    exit 1
-  fi
-}
-
-_configure_aws_cli () {
-  aws configure set aws_access_key_id $AWS_ACCESS_KEY
-  aws configure set aws_secret_access_key $AWS_SECRET_KEY
-  aws configure set region $AWS_REGION
-
-  echo "Successfully configured aws cli."
-}
-
-_configure_aws_ecr () {
-  # TODO: complete aws ecr login script
-
-  echo "Successfully configured aws ecr."
+  _log_success "Successfully initialized scope ecr"
 }
 
 init() {
-  echo "Setting up tools for $RESOURCE_NAME."
-  if [ ! -z $SCOPES ]; then
-    echo "Found scopes: $SCOPES"
-  fi
-
-  _configure_aws_cli
-
-  if has_scope "ecr"; then
-    _configure_aws_ecr
+  _log_grp "Initializing AWS Keys"
+  check_params
+  init_scope_configure
+  if _csv_has_value "$SCOPES" "ecr"; then
+    init_scope_ecr
   fi
 }
 
 main() {
-  parse_args "${ARGS[@]}"
-  check_and_set_vars
-  init
+  if [[ "${#ARGS[@]}" -gt 0 ]]; then
+    case "${ARGS[0]}" in
+      --help)
+        help
+        exit 0
+        ;;
+      *)
+        init
+        ;;
+    esac
+  else
+    help
+    exit 1
+  fi
 }
 
 main
