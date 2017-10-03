@@ -27,9 +27,6 @@ help() {
 check_params() {
   _log_msg "Checking params"
 
-  RESOURCE_NAME=${ARGS[0]}
-  SCOPES=${ARGS[1]}
-
   AWS_ACCESS_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "accessKey" )"
   AWS_SECRET_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "secretKey" )"
   RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
@@ -78,7 +75,11 @@ init_scope_ecr() {
 }
 
 init() {
-  _log_grp "Initializing AWS Keys"
+  RESOURCE_NAME=${ARGS[0]}
+  SCOPES=${ARGS[1]}
+
+  _log_grp "Initializing AWS Keys for resource $RESOURCE_NAME"
+
   check_params
   init_scope_configure
   if _csv_has_value "$SCOPES" "ecr"; then
