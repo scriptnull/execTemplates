@@ -69,7 +69,7 @@ init_scope_ecr() {
     docker_login_cmd=$( aws ecr get-login )
   fi
 
-  echo "$docker_login_cmd" | bash
+  $docker_login_cmd
 
   _log_success "Successfully initialized scope ecr"
 }
