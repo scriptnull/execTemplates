@@ -11,7 +11,6 @@ source "$HELPERS_PATH"
 source "$LOGGER_PATH"
 
 export RESOURCE_NAME=""
-export SCOPES=""
 export JFROG_USERNAME=""
 export JFROG_PASSWORD=""
 export JFROG_URL=""
@@ -51,29 +50,24 @@ check_params() {
 init_scope_configure() {
   _log_msg "Initializing scope configure"
 
-  jfrog_version=$(jfrog --version | awk '{print $3}' )
-  jfrog_MajorVersion=$(echo $jfrog_version | awk -F '.' '{print $1}' )
-  jfrog_MinorVersion=$(echo $jfrog_version | awk -F '.' '{print $2}' )
-
   newJFrogCommand="jfrog rt config default-server --url $JFROG_URL \
-  --password $JFROG_PASSWORD --user $JFROG_USERNAME \
-  --interactive=false && jfrog rt use default-server"
+    --password $JFROG_PASSWORD --user $JFROG_USERNAME \
+    --interactive=false && jfrog rt use default-server"
 
   oldJFrogCommand="jfrog rt config --url $JFROG_URL --password \
-  $JFROG_PASSWORD --user $JFROG_USERNAME"
+    $JFROG_PASSWORD --user $JFROG_USERNAME"
 
-  if [ "$jfrog_MajorVersion" -gt "1" ] ||
-    ( [ "$jfrog_MajorVersion" -eq "1" ] &&
-    [ "$jfrog_MinorVersion" -gt "9" ] ); then $newJFrogCommand;
-  else $oldJFrogCommand;
+  if _is_jfrog_version_new; then
+    $newJFrogCommand;
+  else
+    $oldJFrogCommand;
   fi;
 
-  _log_success "Successfully initialized scope configure"
+  _log_success "Successfully initialized scope configure uu"
 }
 
 init() {
   RESOURCE_NAME=${ARGS[0]}
-  SCOPES=${ARGS[1]}
 
   _log_grp "Initializing artifactoryKey for resource $RESOURCE_NAME"
   check_params

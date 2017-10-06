@@ -11,7 +11,6 @@ source "$HELPERS_PATH"
 source "$LOGGER_PATH"
 
 export RESOURCE_NAME=""
-export SCOPE=""
 
 help() {
   echo "
@@ -23,7 +22,7 @@ help() {
 cleanup_scope_configure() {
   _log_msg "Cleaning up scope configure"
 
-  local jfrog_config_path=~/.jfrog
+  local jfrog_config_path
   jfrog_config_path=~/.jfrog
   if [ -d "$jfrog_config_path" ]; then
     rm -rf $jfrog_config_path
@@ -34,7 +33,6 @@ cleanup_scope_configure() {
 
 cleanup() {
   RESOURCE_NAME=${ARGS[0]}
-  SCOPES=${ARGS[1]}
 
   _log_grp "Cleaning up resource $RESOURCE_NAME"
 
