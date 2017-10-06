@@ -11,7 +11,6 @@ source "$HELPERS_PATH"
 source "$LOGGER_PATH"
 
 export RESOURCE_NAME=""
-export SCOPE=""
 
 help() {
   echo "
@@ -34,7 +33,6 @@ cleanup_scope_quay() {
 
 cleanup() {
   RESOURCE_NAME=${ARGS[0]}
-  SCOPES=${ARGS[1]}
 
   _log_grp "Cleaning up resource $RESOURCE_NAME"
 
