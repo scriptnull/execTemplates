@@ -19,8 +19,8 @@ help() {
   "
 }
 
-cleanup_scope_quay() {
-  _log_msg "Cleaning up scope quay.io"
+cleanup_scope_configure() {
+  _log_msg "Cleaning up scope configure"
 
   local docker_config_path
   docker_config_path=~/.docker
@@ -28,7 +28,7 @@ cleanup_scope_quay() {
     rm -rf $docker_config_path
   fi
 
-  _log_success "Successfully cleaned up scope quay.io"
+  _log_success "Successfully cleaned up scope configure"
 }
 
 cleanup() {
@@ -36,7 +36,7 @@ cleanup() {
 
   _log_grp "Cleaning up resource $RESOURCE_NAME"
 
-  cleanup_scope_quay
+  cleanup_scope_configure
 }
 
 main() {

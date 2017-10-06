@@ -11,7 +11,6 @@ source "$HELPERS_PATH"
 source "$LOGGER_PATH"
 
 export RESOURCE_NAME=""
-export SCOPES=""
 export QUAY_USERNAME=""
 export QUAY_PASSWORD=""
 export QUAY_EMAIL=""
@@ -49,7 +48,7 @@ check_params() {
 }
 
 init_scope_configure() {
-  _log_msg "Initializing scope configure quay.io"
+  _log_msg "Initializing scope configure"
 
   if _is_docker_email_deprecated; then
     docker_login_cmd=$( docker s -u "$QUAY_USERNAME" -p "$QUAY_PASSWORD" quay.io )
@@ -59,12 +58,11 @@ init_scope_configure() {
 
   $docker_login_cmd
 
-  _log_success "Successfully initialized scope configure quay.io"
+  _log_success "Successfully initialized scope configure"
 }
 
 init() {
   RESOURCE_NAME=${ARGS[0]}
-  SCOPES=${ARGS[1]}
 
   _log_grp "Initializing Quay.io login for resource $RESOURCE_NAME"
 
