@@ -50,17 +50,17 @@ check_params() {
 init_scope_configure() {
   _log_msg "Initializing scope configure"
 
-  newJFrogCommand="jfrog rt config default-server --url $JFROG_URL \
+  new_jfrog_command="jfrog rt config default-server --url $JFROG_URL \
     --password $JFROG_PASSWORD --user $JFROG_USERNAME \
     --interactive=false && jfrog rt use default-server"
 
-  oldJFrogCommand="jfrog rt config --url $JFROG_URL --password \
+  old_jfrog_command="jfrog rt config --url $JFROG_URL --password \
     $JFROG_PASSWORD --user $JFROG_USERNAME"
 
   if _is_jfrog_version_new; then
-    $newJFrogCommand;
+    $new_jfrog_command;
   else
-    $oldJFrogCommand;
+    $old_jfrog_command;
   fi;
 
   _log_success "Successfully initialized scope configure uu"
