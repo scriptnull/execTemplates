@@ -63,7 +63,7 @@ init_scope_configure() {
     $old_jfrog_command;
   fi;
 
-  _log_success "Successfully initialized scope configure uu"
+  _log_success "Successfully initialized scope configure"
 }
 
 init() {
