@@ -15,7 +15,6 @@ export SCOPES=""
 export QUAY_USERNAME=""
 export QUAY_PASSWORD=""
 export QUAY_EMAIL=""
-export RESOURCE_VERSION_PATH=""
 
 help() {
   echo "
@@ -30,7 +29,6 @@ check_params() {
   QUAY_USERNAME="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "username" )"
   QUAY_PASSWORD="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "password" )"
   QUAY_EMAIL="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "email" )"
-  RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
 
   if _is_empty "$QUAY_USERNAME"; then
     _log_err "Missing 'username' value in $RESOURCE_NAME's integration."
@@ -50,8 +48,8 @@ check_params() {
   _log_success "Successfully checked params"
 }
 
-init_scope_quay() {
-  _log_msg "Initializing scope quay.io"
+init_scope_configure() {
+  _log_msg "Initializing scope configure quay.io"
 
   if _is_docker_email_deprecated; then
     docker_login_cmd=$( docker s -u "$QUAY_USERNAME" -p "$QUAY_PASSWORD" quay.io )
@@ -61,7 +59,7 @@ init_scope_quay() {
 
   $docker_login_cmd
 
-  _log_success "Successfully initialized scope quay.io"
+  _log_success "Successfully initialized scope configure quay.io"
 }
 
 init() {
@@ -71,7 +69,7 @@ init() {
   _log_grp "Initializing Quay.io login for resource $RESOURCE_NAME"
 
   check_params
-  init_scope_quay
+  init_scope_configure
 }
 
 main() {
