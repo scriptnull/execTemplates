@@ -51,7 +51,7 @@ init_scope_configure() {
   _log_msg "Initializing scope configure"
 
   if _is_docker_email_deprecated; then
-    docker_login_cmd=$( docker s -u "$QUAY_USERNAME" -p "$QUAY_PASSWORD" quay.io )
+    docker_login_cmd=$( docker login -u "$QUAY_USERNAME" -p "$QUAY_PASSWORD" quay.io )
   else
     docker_login_cmd=$( docker login -u "$QUAY_USERNAME" -p "$QUAY_PASSWORD" -e "$QUAY_EMAIL" quay.io )
   fi
