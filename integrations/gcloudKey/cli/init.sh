@@ -30,7 +30,7 @@ check_params() {
   _log_msg "Checking params"
 
   GCLOUD_JSON_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "JSON_key" )"
-  GCLOUD_PROJECT_ID="$( echo $GCLOUD_JSON_KEY | jq -r '.project_id' )"
+  GCLOUD_PROJECT_ID="$( echo "$GCLOUD_JSON_KEY" | jq -r '.project_id' )"
   RESOURCE_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")"
   RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
   GKE_REGION="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.region" )"
@@ -51,7 +51,7 @@ init_scope_configure() {
   touch key.json
   echo "$GCLOUD_JSON_KEY" > key.json
   gcloud -q auth activate-service-account --key-file "key.json"
-  gcloud config set project $GCLOUD_PROJECT_ID
+  gcloud config set project "$GCLOUD_PROJECT_ID"
   popd
 
   _log_success "Successfully initialized scope configure"
