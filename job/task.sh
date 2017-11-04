@@ -26,3 +26,4 @@ task() {
 }
 
 exec_grp "task" "<%= obj.name %>"
+trap before_exit EXIT
