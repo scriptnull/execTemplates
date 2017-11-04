@@ -4,7 +4,7 @@
 task() {
   ret=0
   is_success=false
-  <% _.each(obj.steps, function(cmd) { %>
+  <% _.each(obj.script, function(cmd) { %>
   <% var cmdEscaped = cmd.replace(/\\/g, '\\\\')%>
   <% cmdEscaped = cmdEscaped.replace(/'/g, "\\'") %>
   <%
