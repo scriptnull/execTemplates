@@ -33,8 +33,8 @@ wait() {
   is_success=true
 }
 
+trap before_exit EXIT
 exec_grp "boot" "boot"
-trap before_exit EXIT
 
-exec_grp "wait" "wait"
 trap before_exit EXIT
+exec_grp "wait" "wait"

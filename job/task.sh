@@ -1,6 +1,12 @@
 #
 # generating exec_cmd for each script in task section
 #
+
+# Adding this to support build directory expected with genExec
+symlink_build_dir() {
+  ln -s $BUILD_DIR /build
+}
+
 task() {
   ret=0
   is_success=false
@@ -25,5 +31,10 @@ task() {
   return $ret
 }
 
-exec_grp "task" "<%= obj.name %>"
+<% if (obj.container) { %>
 trap before_exit EXIT
+exec_grp "symlink_build_dir" "Symlinking /build dir" false
+<% } %>
+
+trap before_exit EXIT
+exec_grp "task" "<%= obj.name %>"
