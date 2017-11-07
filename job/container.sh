@@ -34,7 +34,7 @@ wait() {
 }
 
 trap before_exit EXIT
-exec_grp "boot" "boot"
+exec_grp "boot" "boot" "false"
 
 trap before_exit EXIT
-exec_grp "wait" "wait"
+exec_grp "wait" "wait" "false"

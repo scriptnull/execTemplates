@@ -33,7 +33,7 @@ task() {
 
 <% if (obj.container) { %>
 trap before_exit EXIT
-exec_grp "symlink_build_dir" "Symlinking /build dir" false
+exec_grp "symlink_build_dir" "Symlinking /build dir" "false"
 <% } %>
 
 trap before_exit EXIT
