@@ -37,7 +37,7 @@ check_params() {
 init_scope_configure() {
   _log_msg "Initializing scope configure"
 
-  mkdir /root/.kube
+  mkdir ~/.kube
   echo "$KUBERNETES_KUBECONFIGFILE" > /root/.kube/config
 
   _log_success "Successfully initialized scope configure"
@@ -47,6 +47,7 @@ init() {
   RESOURCE_NAME=${ARGS[0]}
 
   _log_grp "Initializing kubernetesConfig for resource $RESOURCE_NAME"
+
   check_params
   init_scope_configure
 }

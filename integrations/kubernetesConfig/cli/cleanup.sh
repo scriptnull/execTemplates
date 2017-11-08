@@ -23,7 +23,7 @@ cleanup_scope_configure() {
   _log_msg "Cleaning up scope configure"
 
   local kube_config_path
-  kube_config_path=/root/.kube
+  kube_config_path=~/.kube
   if [ -d "$kube_config_path" ]; then
     rm -rf $kube_config_path
   fi
