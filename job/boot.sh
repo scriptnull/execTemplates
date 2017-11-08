@@ -2,6 +2,9 @@
 # Used to generate the boot script that brings up the task container or process
 #
 
+# TODO: Consider replacing this with an ENV IS_CONTAINER when it's available.
+# The function names might have to change to accomodate this.
+<% if (obj.isContainer) { %>
 boot() {
   ret=0
   is_success=false
@@ -33,6 +36,16 @@ wait() {
   [ "$ret" != 0 ] && return $ret;
   is_success=true
 }
+
+<% } else { %>
+boot() {
+  exec_cmd "echo Dummy boot for host"
+}
+
+wait() {
+  exec_cmd "echo Dummy wait for host"
+}
+<% } %>
 
 trap before_exit EXIT
 exec_grp "boot" "boot" "false"
