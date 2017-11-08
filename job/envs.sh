@@ -1,3 +1,7 @@
+#
+# Used to generate the envs for the boot and task scripts
+#
+
 <% _.each(obj.envs, function (env) { %>
 {
   export <%= env %>;
