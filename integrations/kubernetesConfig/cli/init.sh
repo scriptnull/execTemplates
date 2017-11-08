@@ -21,7 +21,7 @@ help() {
 }
 
 check_params() {
-  _log_msg "Checking params1"
+  _log_msg "Checking params"
 
   KUBERNETES_INT="$(shipctl get_integration_resource "$RESOURCE_NAME")"
   KUBERNETES_KUBECONFIGFILE="$( echo "$KUBERNETES_INT" | jq -r '.kubeConfigContent' )"
