@@ -1,6 +1,7 @@
 #
-# generating exec_cmd for each script in task section
+# Used to generate the boot script that brings up the task container or process
 #
+
 boot() {
   ret=0
   is_success=false

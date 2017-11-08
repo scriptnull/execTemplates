@@ -1,13 +1,12 @@
 #!/bin/bash -e
 
-######################## HEADER SECTION ################################
 #
-# Prints the command start and end markers with timestamps
-# and executes the supplied command
+# Header script is attached at the beginning of every script generated and
+# contains the most common methods use across the script
 #
 
 before_exit() {
-  ## flush any remaining console
+  # Flush any remaining console
   echo $1
   echo $2
 
@@ -56,9 +55,9 @@ exec_cmd() {
 }
 
 exec_grp() {
-  # first argument is function to execute
-  # second argument is function description to be shown
-  # third argument is whether the group should be shown or not
+  # First argument is function to execute
+  # Second argument is function description to be shown
+  # Third argument is whether the group should be shown or not
   group_name=$1
   group_message=$2
   is_shown=true
@@ -91,5 +90,3 @@ exec_grp() {
   echo "__SH__GROUP__END__|{\"type\":\"grp\",\"sequenceNumber\":\"$group_end_timestamp\",\"id\":\"$group_uuid\",\"is_shown\":\"$is_shown\",\"exitcode\":\"$group_status\"}|$group_message"
   return $group_status
 }
-
-######################## END HEADER SECTION ###########################

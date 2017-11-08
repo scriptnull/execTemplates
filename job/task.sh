@@ -1,5 +1,5 @@
 #
-# generating exec_cmd for each script in task section
+# The script to run the user provided commands is generated here
 #
 
 # Adding this to support build directory expected with genExec
