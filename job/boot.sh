@@ -23,6 +23,15 @@ boot() {
   ret=$?
   trap before_exit EXIT
   [ "$ret" != 0 ] && return $ret;
+
+  exec_cmd $'echo "IS_CONTAINER=true" > <%= obj.jobInfoPath %>'
+  ret=$?
+  [ "$ret" != 0 ] && return $ret;
+
+  exec_cmd $'echo "JOB_ID=$(docker ps -qf "name=<%= obj.containerName %>")" >> <%= obj.jobInfoPath %>'
+  ret=$?
+  [ "$ret" != 0 ] && return $ret;
+
   is_success=true
 }
 
