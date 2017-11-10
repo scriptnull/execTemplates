@@ -9,14 +9,12 @@ boot() {
   <% options = options.replace(/'/g, "\\'") %>
   <% var envs = obj.envs.replace(/\\/g, '\\\\') %>
   <% envs = envs.replace(/'/g, "\\'") %>
-  <% var volumes = obj.volumes.replace(/\\/g, '\\\\') %>
-  <% volumes = volumes.replace(/'/g, "\\'") %>
   <% var image = obj.image.replace(/\\/g, '\\\\') %>
   <% image = image.replace(/'/g, "\\'") %>
   <% var command = obj.command.replace(/\\/g, '\\\\') %>
   <% command = command.replace(/'/g, "\\'") %>
 
-  exec_cmd $'sudo docker run <%= options %> <%= envs %> <%= volumes %> <%= image %> <%= command %>'
+  exec_cmd $'sudo docker run <%= options %> <%= envs %> <%= image %> <%= command %>'
   ret=$?
   trap before_exit EXIT
   [ "$ret" != 0 ] && return $ret;
@@ -25,4 +23,4 @@ boot() {
 }
 
 trap before_exit EXIT
-exec_grp "boot" "boot" "false"
+exec_grp "boot" "boot" "true"
