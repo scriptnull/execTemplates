@@ -14,6 +14,10 @@ boot() {
   <% var command = obj.command.replace(/\\/g, '\\\\') %>
   <% command = command.replace(/'/g, "\\'") %>
 
+  <% if (obj.pull) {%>
+  exec_cmd $'sudo docker pull <%= image %>'
+  <%}%>
+
   exec_cmd $'sudo docker run <%= options %> <%= envs %> <%= image %> <%= command %>'
   ret=$?
   trap before_exit EXIT
