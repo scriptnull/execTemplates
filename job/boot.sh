@@ -1,10 +1,7 @@
 #
-# Used to generate the boot script that brings up the task container or process
+# Used to generate the boot script that brings up the task container
 #
 
-# TODO: Consider replacing this with an ENV IS_CONTAINER when it's available.
-# The function names might have to change to accomodate this.
-<% if (obj.isContainer) { %>
 boot() {
   ret=0
   is_success=false
@@ -24,40 +21,8 @@ boot() {
   trap before_exit EXIT
   [ "$ret" != 0 ] && return $ret;
 
-  exec_cmd $'echo "IS_CONTAINER=true" > <%= obj.jobInfoPath %>'
-  ret=$?
-  [ "$ret" != 0 ] && return $ret;
-
-  exec_cmd $'echo "JOB_ID=$(docker ps -qf "name=<%= obj.containerName %>")" >> <%= obj.jobInfoPath %>'
-  ret=$?
-  [ "$ret" != 0 ] && return $ret;
-
   is_success=true
 }
-
-wait() {
-  ret=0
-  is_success=false
-  exit_code=$(sudo docker wait <%= obj.containerName %> )
-  exec_cmd "echo Container <%= obj.containerName %> exited with $exit_code"
-
-  ret=$exit_code
-  [ "$ret" != 0 ] && return $ret;
-  is_success=true
-}
-
-<% } else { %>
-boot() {
-  exec_cmd "echo Dummy boot for host"
-}
-
-wait() {
-  exec_cmd "echo Dummy wait for host"
-}
-<% } %>
 
 trap before_exit EXIT
 exec_grp "boot" "boot" "false"
-
-trap before_exit EXIT
-exec_grp "wait" "wait" "false"
