@@ -21,8 +21,26 @@ before_exit() {
   fi
 
   if [ "$is_success" == true ]; then
+    # "on_success" is only defined for the last task, so execute "always" only
+    # if this is the last task.
+    if [ "$(type -t on_success)" == "function" ]; then
+      exec_cmd "on_success"
+
+      if [ "$(type -t always)" == "function" ]; then
+        exec_cmd "always"
+      fi
+    fi
+
     echo "__SH__SCRIPT_END_SUCCESS__";
   else
+    if [ "$(type -t on_failure)" == "function" ]; then
+      exec_cmd "on_failure"
+    fi
+
+    if [ "$(type -t always)" == "function" ]; then
+      exec_cmd "always"
+    fi
+
     echo "__SH__SCRIPT_END_FAILURE__";
   fi
 }
