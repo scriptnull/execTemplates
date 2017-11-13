@@ -1,11 +1,13 @@
 cleanup_amazon_keys() {
-  if [ -d "~/.aws" ]; then
+  local aws_config_path=~/.aws
+  if [ -d "$aws_config_path" ]; then
     rm -rf $aws_config_path
   fi
 }
 
 cleanup_amazon_keys_ecr() {
-  if [ -d "~/.docker" ]; then
+  local docker_config_path=~/.docker
+  if [ -d "$docker_config_path" ]; then
     rm -rf $docker_config_path
   fi
 }
