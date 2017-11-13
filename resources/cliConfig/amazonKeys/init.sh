@@ -22,10 +22,23 @@ init_amazon_keys_configure() {
 }
 
 init_amazon_keys_ecr() {
-  configure_aws_ecr_output=$(aws ecr get-login --no-include-email 2>&1)
+  if _is_docker_email_deprecated; then
+    aws_ecr_output=$(aws ecr get-login --no-include-email 2>&1)
+  else
+    aws_ecr_output=$(aws ecr get-login 2>&1)
+  fi
   ret=$?
   if [ "$ret" != 0 ]; then
     exec_cmd "echo 'Failed with error $configure_aws_ecr_output'"
+    return $ret
+  fi
+
+  exec_cmd "echo 'Logging in to ECR'"
+
+  eval $aws_ecr_output
+  ret=$?
+  if [ "$ret" != 0 ]; then
+    exec_cmd "echo 'Failed with error code $ret'"
     return $ret
   fi
 }
