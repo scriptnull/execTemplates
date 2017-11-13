@@ -7,6 +7,42 @@ symlink_build_dir() {
   ln -s $BUILD_DIR /build
 }
 
+<% if (obj.onSuccess) { %>
+on_success() {
+  # : to allow empty section
+  :
+  <% _.each(obj.onSuccess.script, function(cmd) { %>
+    <% var cmdEscaped = cmd.replace(/\\/g, '\\\\')%>
+    <% cmdEscaped = cmdEscaped.replace(/'/g, "\\'") %>
+    eval $'<%= cmdEscaped %>'
+  <% }); %>
+}
+<% } %>
+
+<% if (obj.onFailure) { %>
+on_failure() {
+  # : to allow empty section
+  :
+  <% _.each(obj.onFailure.script, function(cmd) { %>
+    <% var cmdEscaped = cmd.replace(/\\/g, '\\\\')%>
+    <% cmdEscaped = cmdEscaped.replace(/'/g, "\\'") %>
+    eval $'<%= cmdEscaped %>'
+  <% }); %>
+}
+<% } %>
+
+<% if (obj.always) { %>
+always() {
+  # : to allow empty section
+  :
+  <% _.each(obj.always.script, function(cmd) { %>
+    <% var cmdEscaped = cmd.replace(/\\/g, '\\\\')%>
+    <% cmdEscaped = cmdEscaped.replace(/'/g, "\\'") %>
+    eval $'<%= cmdEscaped %>'
+  <% }); %>
+}
+<% } %>
+
 task() {
   ret=0
   is_success=false
