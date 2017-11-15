@@ -3,3 +3,4 @@ build:
   ci:
     - apt-get install -y shellcheck
     - shellcheck -s bash $(find ./integrations -name "*.sh")
+    - shellcheck -s bash $(find ./resources -name "*.sh")

@@ -11,7 +11,6 @@ source "$HELPERS_PATH"
 source "$LOGGER_PATH"
 
 export RESOURCE_NAME=""
-export SCOPE=""
 
 help() {
   echo "
@@ -23,37 +22,21 @@ help() {
 cleanup_scope_configure() {
   _log_msg "Cleaning up scope configure"
 
-  local aws_config_path
-  aws_config_path=~/.aws
-  if [ -d "$aws_config_path" ]; then
-    rm -rf $aws_config_path
+  local jfrog_config_path
+  jfrog_config_path=~/.jfrog
+  if [ -d "$jfrog_config_path" ]; then
+    rm -rf $jfrog_config_path
   fi
 
   _log_success "Successfully cleaned up scope configure"
 }
 
-cleanup_scope_ecr() {
-  _log_msg "Cleaning up scope ecr"
-
-  local docker_config_path
-  docker_config_path=~/.docker
-  if [ -d "$docker_config_path" ]; then
-    rm -rf $docker_config_path
-  fi
-
-  _log_success "Successfully cleaned up scope ecr"
-}
-
 cleanup() {
   RESOURCE_NAME=${ARGS[0]}
-  SCOPES=${ARGS[1]}
 
   _log_grp "Cleaning up resource $RESOURCE_NAME"
 
   cleanup_scope_configure
-  if _csv_has_value "$SCOPES" "ecr"; then
-    cleanup_scope_ecr
-  fi
 }
 
 main() {

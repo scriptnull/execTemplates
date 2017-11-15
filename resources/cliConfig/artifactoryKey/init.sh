@@ -11,10 +11,9 @@ source "$HELPERS_PATH"
 source "$LOGGER_PATH"
 
 export RESOURCE_NAME=""
-export REGISTRY_URL=""
-export REGISTRY_USERNAME=""
-export REGISTRY_PASSWORD=""
-export REGISTRY_EMAIL=""
+export JFROG_USERNAME=""
+export JFROG_PASSWORD=""
+export JFROG_URL=""
 
 help() {
   echo "
@@ -26,23 +25,22 @@ help() {
 check_params() {
   _log_msg "Checking params"
 
-  REGISTRY_URL="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "url" )"
-  REGISTRY_USERNAME="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "username" )"
-  REGISTRY_PASSWORD="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "password" )"
-  REGISTRY_EMAIL="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "email" )"
+  JFROG_USERNAME="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "userName" )"
+  JFROG_PASSWORD="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "password" )"
+  JFROG_URL="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "url" )"
 
-  if _is_empty "$REGISTRY_USERNAME"; then
-    _log_err "Missing 'username' value in $RESOURCE_NAME's integration."
+  if _is_empty "$JFROG_USERNAME"; then
+    _log_err "Missing 'userName' value in $RESOURCE_NAME's integration."
     exit 1
   fi
 
-  if _is_empty "$REGISTRY_PASSWORD"; then
+  if _is_empty "$JFROG_PASSWORD"; then
     _log_err "Missing 'password' value in $RESOURCE_NAME's integration."
     exit 1
   fi
 
-  if _is_empty "$REGISTRY_EMAIL"; then
-    _log_err "Missing 'email' value in $RESOURCE_NAME's integration."
+  if _is_empty "$JFROG_URL"; then
+    _log_err "Missing 'url' value in pointer section of $RESOURCE_NAME's yml"
     exit 1
   fi
 
@@ -52,11 +50,18 @@ check_params() {
 init_scope_configure() {
   _log_msg "Initializing scope configure"
 
-  if _is_docker_email_deprecated; then
-    docker login -u "$REGISTRY_USERNAME" -p "$REGISTRY_PASSWORD" "$REGISTRY_URL"
+  new_jfrog_command="jfrog rt config default-server --url $JFROG_URL \
+    --password $JFROG_PASSWORD --user $JFROG_USERNAME \
+    --interactive=false && jfrog rt use default-server"
+
+  old_jfrog_command="jfrog rt config --url $JFROG_URL --password \
+    $JFROG_PASSWORD --user $JFROG_USERNAME"
+
+  if _is_jfrog_version_new; then
+    $new_jfrog_command;
   else
-    docker login -u "$REGISTRY_USERNAME" -p "$REGISTRY_PASSWORD" -e "$REGISTRY_EMAIL" "$REGISTRY_URL"
-  fi
+    $old_jfrog_command;
+  fi;
 
   _log_success "Successfully initialized scope configure"
 }
@@ -64,8 +69,7 @@ init_scope_configure() {
 init() {
   RESOURCE_NAME=${ARGS[0]}
 
-  _log_grp "Initializing Docker registry login for resource $RESOURCE_NAME"
-
+  _log_grp "Initializing artifactoryKey for resource $RESOURCE_NAME"
   check_params
   init_scope_configure
 }
