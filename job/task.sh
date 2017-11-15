@@ -50,9 +50,25 @@ always() {
 }
 <% } %>
 
+init_integrations() {
+  # : to allow empty section
+  :
+  <% if (obj.integrationInitScripts.length > 0) { %>
+    exec_cmd 'echo "Initializing CLI integrations"'
+    <% _.each(obj.integrationInitScripts, function (integrationInitScript) { %>
+    <%= integrationInitScript %>
+    <% }); %>
+  <% } %>
+}
+
 task() {
   ret=0
   is_success=false
+
+  init_integrations
+  trap before_exit EXIT
+  [ "$ret" != 0 ] && return $ret;
+
   <% _.each(obj.script, function(cmd) { %>
   <% var cmdEscaped = cmd.replace(/\\/g, '\\\\')%>
   <% cmdEscaped = cmdEscaped.replace(/'/g, "\\'") %>
@@ -69,9 +85,25 @@ task() {
   trap before_exit EXIT
   [ "$ret" != 0 ] && return $ret;
   <% }); %>
+
+  cleanup_integrations
+  trap before_exit EXIT
+  [ "$ret" != 0 ] && return $ret;
+
   ret=0
   is_success=true
   return $ret
+}
+
+cleanup_integrations() {
+  # : to allow empty section
+  :
+  <% if (obj.integrationInitScripts.length > 0) { %>
+    exec_cmd 'echo "Cleaning CLI integrations"'
+    <% _.each(obj.integrationCleanupScripts, function (integrationCleanupScript) { %>
+    <%= integrationCleanupScript %>
+    <% }); %>
+  <% } %>
 }
 
 <% if (obj.container) { %>
