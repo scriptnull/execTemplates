@@ -5,9 +5,9 @@ readonly COMMON_DIR="$ROOT_DIR/resources/common"
 readonly HELPERS_PATH="$COMMON_DIR/_helpers.sh"
 readonly LOGGER_PATH="$COMMON_DIR/_logger.sh"
 
-# shellcheck source=integrations/common/_helpers.sh
+# shellcheck source=resources/common/_helpers.sh
 source "$HELPERS_PATH"
-# shellcheck source=integrations/common/_logger.sh
+# shellcheck source=resources/common/_logger.sh
 source "$LOGGER_PATH"
 
 export KUBERNETES_KUBECONFIGFILE=""
