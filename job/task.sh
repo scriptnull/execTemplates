@@ -10,8 +10,7 @@ symlink_build_dir() {
 
 add_subscription_ssh_key() {
   exec_cmd "eval `ssh-agent -s`"
-  # TODO: remove || true, after making ssh-add work on host runSh jobs
-  exec_cmd "ssh-add $SUBSCRIPTION_PRIVATE_KEY || true"
+  exec_cmd "ssh-add $SUBSCRIPTION_PRIVATE_KEY"
 }
 
 <% if (obj.onSuccess) { %>
