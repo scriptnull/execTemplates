@@ -20,12 +20,13 @@
 }
 <% }); %>
 
-export SHIPPABLE_NODE_OPERATING_SYSTEM="<%= obj.shippableRuntimeEnvs.SHIPPABLE_NODE_OPERATING_SYSTEM %>"
-export TASK_NAME="<%= obj.shippableRuntimeEnvs.TASK_NAME %>"
-export TASK_IN_CONTAINER=<%= obj.shippableRuntimeEnvs.TASK_IN_CONTAINER %>
+export SHIPPABLE_NODE_ARCHITECTURE="<%= obj.shippableRuntimeEnvs.shippableNodeArchitecture %>"
+export SHIPPABLE_NODE_OPERATING_SYSTEM="<%= obj.shippableRuntimeEnvs.shippableNodeOperatingSystem %>"
+export TASK_NAME="<%= obj.shippableRuntimeEnvs.taskName %>"
+export TASK_IN_CONTAINER=<%= obj.shippableRuntimeEnvs.isTaskInContainer %>
 if [ "$TASK_IN_CONTAINER" == true ]; then
-  export TASK_CONTAINER_OPTIONS="<%= obj.shippableRuntimeEnvs.TASK_CONTAINER_OPTIONS %>"
-  export TASK_CONTAINER_IMAGE="<%= obj.shippableRuntimeEnvs.TASK_CONTAINER_IMAGE %>"
-  export TASK_CONTAINER_IMAGE_SHOULD_PULL="<%= obj.shippableRuntimeEnvs.TASK_CONTAINER_IMAGE_SHOULD_PULL %>"
-  export TASK_CONTAINER_COMMAND="<%= obj.shippableRuntimeEnvs.TASK_CONTAINER_COMMAND %>"
+  export TASK_CONTAINER_OPTIONS="<%= obj.shippableRuntimeEnvs.taskContainerOptions %>"
+  export TASK_CONTAINER_IMAGE="<%= obj.shippableRuntimeEnvs.taskContainerImage %>"
+  export TASK_CONTAINER_IMAGE_SHOULD_PULL="<%= obj.shippableRuntimeEnvs.shouldPullTaskContainerImage %>"
+  export TASK_CONTAINER_COMMAND="<%= obj.shippableRuntimeEnvs.taskContainerCommand %>"
 fi
