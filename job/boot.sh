@@ -5,20 +5,12 @@
 boot() {
   ret=0
   is_success=false
-  <% var options = obj.options.replace(/\\/g, '\\\\') %>
-  <% options = options.replace(/'/g, "\\'") %>
-  <% var envs = obj.envs.replace(/\\/g, '\\\\') %>
-  <% envs = envs.replace(/'/g, "\\'") %>
-  <% var image = obj.image.replace(/\\/g, '\\\\') %>
-  <% image = image.replace(/'/g, "\\'") %>
-  <% var command = obj.command.replace(/\\/g, '\\\\') %>
-  <% command = command.replace(/'/g, "\\'") %>
 
-  <% if (obj.pull) {%>
-  exec_cmd $'sudo docker pull <%= image %>'
-  <%}%>
+  if [ "$TASK_CONTAINER_IMAGE_SHOULD_PULL" == true ]; then
+    exec_cmd "sudo docker pull $TASK_CONTAINER_IMAGE"
+  fi
 
-  exec_cmd $'sudo docker run <%= options %> <%= envs %> <%= image %> <%= command %>'
+  exec_cmd "sudo docker run $TASK_CONTAINER_OPTIONS $TASK_CONTAINER_IMAGE $TASK_CONTAINER_COMMAND"
   ret=$?
   trap before_exit EXIT
   [ "$ret" != 0 ] && return $ret;
@@ -27,4 +19,4 @@ boot() {
 }
 
 trap before_exit EXIT
-exec_grp "boot" "boot" "true"
+exec_grp "boot" "Booting up container for task: $TASK_NAME" "true"
