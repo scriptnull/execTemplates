@@ -10,3 +10,5 @@
   return 1
 }
 <% }); %>
+
+export SUBSCRIPTION_PRIVATE_KEY="$BUILD_DIR/secrets/00_sub"
