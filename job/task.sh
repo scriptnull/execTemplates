@@ -1,7 +1,6 @@
 #
 # The script to run the user provided commands is generated here
 #
-export SUBSCRIPTION_PRIVATE_KEY="$BUILD_DIR/secrets/00_sub"
 
 # Adding this to support build directory expected with genExec
 symlink_build_dir() {
@@ -105,13 +104,13 @@ cleanup_integrations() {
   <% } %>
 }
 
-<% if (obj.container) { %>
-trap before_exit EXIT
-exec_grp "symlink_build_dir" "Symlinking /build dir" "false"
-<% } %>
+if [ "$TASK_IN_CONTAINER" == true ]; then
+  trap before_exit EXIT
+  exec_grp "symlink_build_dir" "Symlinking /build dir" "false"
+fi
 
 trap before_exit EXIT
 exec_grp "add_subscription_ssh_key" "Adding Subscription SSH Key" "false"
 
 trap before_exit EXIT
-exec_grp "task" "<%= obj.name %>"
+exec_grp "task" "Executing task: $TASK_NAME"
