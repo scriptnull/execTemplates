@@ -20,7 +20,6 @@
 }
 <% }); %>
 
-export SUBSCRIPTION_PRIVATE_KEY="$BUILD_DIR/secrets/00_sub"
 export SHIPPABLE_NODE_OPERATING_SYSTEM="<%= obj.shippableRuntimeEnvs.SHIPPABLE_NODE_OPERATING_SYSTEM %>"
 export TASK_NAME="<%= obj.shippableRuntimeEnvs.TASK_NAME %>"
 export TASK_IN_CONTAINER=<%= obj.shippableRuntimeEnvs.TASK_IN_CONTAINER %>
