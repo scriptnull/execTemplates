@@ -11,8 +11,7 @@ source "$HELPERS_PATH"
 # shellcheck source=resources/common/_logger.sh
 source "$LOGGER_PATH"
 
-export IMAGE_NAME=""
-export IMAGE_TAG=""
+export FILE_URI=""
 export IS_PULL_TRUE=""
 export RESOURCE_META_PATH=""
 
@@ -26,33 +25,33 @@ help() {
 check_params() {
   _log_msg "Checking params"
 
-  IMAGE_NAME="$( shipctl get_json_value "$RESOURCE_META_PATH/version.json" "propertyBag.yml.pointer.sourceName" )"
-  IMAGE_TAG="$( shipctl get_json_value "$RESOURCE_META_PATH/version.json" "propertyBag.yml.seed.versionName" )"
+  FILE_URI="$( shipctl get_json_value "$RESOURCE_META_PATH/version.json" "propertyBag.yml.pointer.sourceName" )"
 
-  if _is_empty "$IMAGE_NAME"; then
+  if _is_empty "$FILE_URI"; then
     _log_err "Missing 'pointer.sourceName' value in YML for $RESOURCE_NAME."
-    exit 1
-  fi
-
-  if _is_empty "$IMAGE_TAG"; then
-    _log_err "Missing 'seed.versionName' value in YML for $RESOURCE_NAME."
     exit 1
   fi
 
   _log_success "Successfully checked params"
 }
 
-pull_image() {
-  _log_msg "Starting image pull"
+get_file() {
+  if _is_empty "$1"; then
+    _log_err "A path to save file to is required."
+    exit 1
+  fi
 
-  docker pull "$IMAGE_NAME:$IMAGE_TAG"
+  _log_msg "Starting to fetch file"
 
-  _log_success "Successfully pulled image"
+  wget "$FILE_URI" -P "$1"
+
+  _log_success "Successfully fetched file"
 }
 
 init() {
   RESOURCE_NAME=${ARGS[0]}
   RESOURCE_META_PATH="$( shipctl get_resource_meta "$RESOURCE_NAME" )"
+  RESOURCE_STATE_PATH="$( shipctl get_resource_state "$RESOURCE_NAME" )"
 
   IS_PULL_TRUE="$( shipctl get_json_value "$RESOURCE_META_PATH/version.json" "versionDependencyPropertyBag.pull" )"
   INT_MASTER_NAME=""
@@ -63,15 +62,10 @@ init() {
   if [ "$IS_PULL_TRUE" == "true" ]; then
     check_params
     if [ ! -z "$INT_MASTER_NAME" ]; then
-      if [ "$INT_MASTER_NAME" == "amazonKeys" ]; then
-        "$CLICONFIG_SCRIPT_DIR/$INT_MASTER_NAME/init.sh" "$RESOURCE_NAME" "ecr"
-      elif [ "$INT_MASTER_NAME" == "gcloudKey" ]; then
-        "$CLICONFIG_SCRIPT_DIR/$INT_MASTER_NAME/init.sh" "$RESOURCE_NAME" "gcr"
-      else
-        "$CLICONFIG_SCRIPT_DIR/$INT_MASTER_NAME/init.sh" "$RESOURCE_NAME"
-      fi
+      echo "TODO: add file resource with int handling in next pm"
+    else
+      get_file "$RESOURCE_STATE_PATH"
     fi
-    pull_image
   fi
 }
 
