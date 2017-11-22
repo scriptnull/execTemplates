@@ -47,7 +47,7 @@ before_exit() {
 
 exec_cmd() {
   cmd=$@
-  cmd_uuid=$(cat /proc/sys/kernel/random/uuid)
+  cmd_uuid=$(uuidgen | awk '{print tolower($0)}')
   cmd_start_timestamp=`date +"%s"`
   echo "__SH__CMD__START__|{\"type\":\"cmd\",\"sequenceNumber\":\"$cmd_start_timestamp\",\"id\":\"$cmd_uuid\"}|$cmd"
 
@@ -86,7 +86,7 @@ exec_grp() {
   if [ -z "$group_message" ]; then
     group_message=$group_name
   fi
-  group_uuid=$(cat /proc/sys/kernel/random/uuid)
+  group_uuid=$(uuidgen | awk '{print tolower($0)}')
   group_start_timestamp=`date +"%s"`
   echo ""
   echo "__SH__GROUP__START__|{\"type\":\"grp\",\"sequenceNumber\":\"$group_start_timestamp\",\"id\":\"$group_uuid\",\"is_shown\":\"$is_shown\"}|$group_message"
