@@ -1,15 +1,27 @@
-## Contribute
-- Create the following file structure inside `integrations` directory.
-    ```
-    integrationName/
-    `-- cli
-        |-- cleanup.sh
-        `-- init.sh
-    ```
-- Populate `init.sh` with the script required to configure the integration.
-- Populate `cleanup.sh` with the script required to clean up the integration.
-- Reference an existing integration handler for help.
-- Lint your scripts using [shellcheck](https://github.com/koalaman/shellcheck).
-    ```bash
-    make lint
-    ```
+# Contributing
+
+## Resource Files
+- These are used to setup a Shippable resource.
+- Two files should be defined `init.sh` and `cleanup.sh` in the following structure for every resource and integration master name combination:
+  ```
+  ├── <os>
+  │   └── resources
+  │       ├── <resourceType>
+  │       │   ├── <integrationMasterName>
+  │       │   │   ├── cleanup.sh
+  │       │   │   └── init.sh
+  ```
+
+## Job Files
+- These are templates used to generate a runSh job script:
+  ```
+  ├── <os>
+  │   └── job
+  │   │   ├── boot.sh
+  │   │   ├── envs.sh
+  │   │   ├── header.sh
+  │   │   └── task.sh
+  ```
+
+## Linting
+- Install [shellcheck](https://github.com/koalaman/shellcheck) and run the liniting command found in `shippable.yml`.
