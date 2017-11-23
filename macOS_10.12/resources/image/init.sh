@@ -6,9 +6,9 @@ readonly HELPERS_PATH="$COMMON_DIR/_helpers.sh"
 readonly LOGGER_PATH="$COMMON_DIR/_logger.sh"
 readonly CLICONFIG_SCRIPT_DIR="$ROOT_DIR/resources/cliConfig"
 
-# shellcheck source=resources/common/_helpers.sh
+# shellcheck source=macOS_10.12/resources/common/_helpers.sh
 source "$HELPERS_PATH"
-# shellcheck source=resources/common/_logger.sh
+# shellcheck source=macOS_10.12/resources/common/_logger.sh
 source "$LOGGER_PATH"
 
 export IMAGE_NAME=""

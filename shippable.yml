@@ -2,4 +2,5 @@ language: none
 build:
   ci:
     - apt-get install -y shellcheck
-    - shellcheck -s bash $(find ./resources -name "*.sh")
+    # Ignore job templates for now.
+    - shellcheck -s bash $(find ./ -name "*.sh" -not -path "*/job/*.sh")
