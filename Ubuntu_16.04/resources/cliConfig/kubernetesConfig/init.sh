@@ -37,8 +37,8 @@ check_params() {
 init_scope_configure() {
   _log_msg "Initializing scope configure"
 
-  mkdir -p ~/.kube
-  echo "$KUBERNETES_KUBECONFIGFILE" > ~/.kube/config
+  mkdir ~/.kube
+  echo "$KUBERNETES_KUBECONFIGFILE" > /root/.kube/config
 
   _log_success "Successfully initialized scope configure"
 }
