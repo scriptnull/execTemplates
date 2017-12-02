@@ -10,9 +10,14 @@ source "$HELPERS_PATH"
 # shellcheck source=macOS_10.12/resources/common/_logger.sh
 source "$LOGGER_PATH"
 
+export RESOURCE_NAME=""
+export RESOURCE_VERSION_PATH=""
+export SCOPES=""
 export AZUREKEYS_APPID=""
 export AZUREKEYS_PASSWORD=""
 export AZUREKEYS_TENANT=""
+export AKS_GROUP_NAME=""
+export AKS_CLUSTER_NAME=""
 
 help() {
   echo "
@@ -27,6 +32,9 @@ check_params() {
   AZUREKEYS_APPID="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "appId" )"
   AZUREKEYS_PASSWORD="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "password" )"
   AZUREKEYS_TENANT="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "tenant" )"
+  RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
+  AKS_GROUP_NAME="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.groupName" )"
+  AKS_CLUSTER_NAME="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.clusterName" )"
 
   if _is_empty "$AZUREKEYS_APPID"; then
     _log_err "Missing 'appId' value in $RESOURCE_NAME's integration."
@@ -54,13 +62,25 @@ init_scope_configure() {
   _log_success "Successfully initialized scope configure"
 }
 
+init_scope_aks() {
+  _log_msg "Initializing scope aks"
+
+  az aks get-credentials -g "$AKS_GROUP_NAME" -n "$AKS_CLUSTER_NAME"
+
+  _log_success "Successfully initialized scope aks"
+}
+
 init() {
   RESOURCE_NAME=${ARGS[0]}
+  SCOPES=${ARGS[1]}
 
   _log_grp "Initializing azureKeys for resource $RESOURCE_NAME"
 
   check_params
   init_scope_configure
+  if _csv_has_value "$SCOPES" "aks"; then
+    init_scope_aks
+  fi
 }
 
 main() {
