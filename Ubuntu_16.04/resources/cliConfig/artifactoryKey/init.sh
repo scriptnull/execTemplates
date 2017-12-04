@@ -58,9 +58,9 @@ init_scope_configure() {
     $JFROG_PASSWORD --user $JFROG_USERNAME"
 
   if _is_jfrog_version_new; then
-    $new_jfrog_command;
+    eval "$new_jfrog_command"
   else
-    $old_jfrog_command;
+    eval "$old_jfrog_command"
   fi;
 
   _log_success "Successfully initialized scope configure"
