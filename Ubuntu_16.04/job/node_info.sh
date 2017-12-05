@@ -16,7 +16,7 @@ check_docker_daemon() {
   local wait_time_secs=3
   for i in $(seq 1 $max_retries); do
     {
-      sudo docker info > /dev/null 2>&1
+      docker info > /dev/null 2>&1
       exec_cmd "echo 'Docker daemon successfully running on the host'"
       break
     } || {
@@ -27,11 +27,11 @@ check_docker_daemon() {
 }
 
 get_docker_info() {
-  exec_cmd "sudo docker info"
+  exec_cmd "docker info"
 }
 
 get_docker_containers() {
-  exec_cmd "sudo docker ps -a"
+  exec_cmd "docker ps -a"
 }
 
 get_bash_info() {
