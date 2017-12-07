@@ -25,10 +25,10 @@ help() {
 check_params() {
   _log_msg "Checking params"
 
-  FILE_URI="$( shipctl get_json_value "$RESOURCE_META_PATH/version.json" "propertyBag.yml.pointer.sourceName" )"
+  FILE_URI="$( shipctl get_json_value "$RESOURCE_META_PATH/version.json" "version.propertyBag.sourceName" )"
 
   if _is_empty "$FILE_URI"; then
-    _log_err "Missing 'pointer.sourceName' value in YML for $RESOURCE_NAME."
+    _log_err "Missing 'sourceName' value in version for $RESOURCE_NAME."
     exit 1
   fi
 
