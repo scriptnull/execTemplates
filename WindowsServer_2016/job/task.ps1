@@ -5,7 +5,7 @@ Function task() {
 Function main() {
   Try
   {
-    task
+    exec_grp "task" "Executing Task"
   }
   Finally
   {
