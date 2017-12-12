@@ -1,5 +1,5 @@
 Function task() {
-  dir
+  exec_cmd dir
 }
 
 Function main() {
