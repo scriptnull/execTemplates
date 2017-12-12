@@ -19,7 +19,7 @@ Function exec_grp([string]$group_name, [string]$group_message,[Bool]$is_shown = 
 
   # TODO: export current_grp and current_grp_uuid
 
-  Invoke-Expression $func_name
+  Invoke-Expression $group_name
 
   # TODO: unset current_grp and current_grp_uuid
 
