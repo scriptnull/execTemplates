@@ -1,1 +1,16 @@
-echo "TODO: complete task.ps1"
+Function task() {
+  dir
+}
+
+Function main() {
+  Try
+  {
+    task
+  }
+  Finally
+  {
+    before_exit
+  }
+}
+
+main
