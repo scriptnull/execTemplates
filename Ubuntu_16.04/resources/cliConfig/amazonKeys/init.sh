@@ -30,7 +30,8 @@ check_params() {
   AWS_ACCESS_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "accessKey" )"
   AWS_SECRET_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "secretKey" )"
   RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
-  AWS_REGION="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.region" )"
+  echo "AWS version.propertyBag.region"
+  AWS_REGION="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "version.propertyBag.region" )"
 
   if _is_empty "$AWS_ACCESS_KEY"; then
     _log_err "Missing 'accessKey' value in $RESOURCE_NAME's integration."
