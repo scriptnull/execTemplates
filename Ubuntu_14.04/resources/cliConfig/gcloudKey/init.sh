@@ -33,8 +33,8 @@ check_params() {
   GCLOUD_PROJECT_ID="$( echo "$GCLOUD_JSON_KEY" | jq -r '.project_id' )"
   RESOURCE_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")"
   RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
-  GKE_REGION="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.region" )"
-  GKE_CLUSTER_NAME="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.clusterName" )"
+  GKE_REGION="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "version.propertyBag.region" )"
+  GKE_CLUSTER_NAME="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "version.propertyBag.clusterName" )"
 
   if _is_empty "$GCLOUD_JSON_KEY"; then
     _log_err "Missing 'JSON_key' value in $RESOURCE_NAME's integration."
