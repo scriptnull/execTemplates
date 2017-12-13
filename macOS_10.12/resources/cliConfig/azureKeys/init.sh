@@ -33,8 +33,8 @@ check_params() {
   AZUREKEYS_PASSWORD="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "password" )"
   AZUREKEYS_TENANT="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "tenant" )"
   RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
-  AKS_GROUP_NAME="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.groupName" )"
-  AKS_CLUSTER_NAME="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "propertyBag.yml.pointer.clusterName" )"
+  AKS_GROUP_NAME="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "version.propertyBag.groupName" )"
+  AKS_CLUSTER_NAME="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "version.propertyBag..clusterName" )"
 
   if _is_empty "$AZUREKEYS_APPID"; then
     _log_err "Missing 'appId' value in $RESOURCE_NAME's integration."
