@@ -26,16 +26,16 @@ help() {
 check_params() {
   _log_msg "Checking params"
 
-  IMAGE_NAME="$( shipctl get_json_value "$RESOURCE_META_PATH/version.json" "propertyBag.yml.pointer.sourceName" )"
-  IMAGE_TAG="$( shipctl get_json_value "$RESOURCE_META_PATH/version.json" "propertyBag.yml.seed.versionName" )"
+  IMAGE_NAME="$( shipctl get_json_value "$RESOURCE_META_PATH/version.json" "version.propertyBag.sourceName" )"
+  IMAGE_TAG="$( shipctl get_json_value "$RESOURCE_META_PATH/version.json" "version.versionName" )"
 
   if _is_empty "$IMAGE_NAME"; then
-    _log_err "Missing 'pointer.sourceName' value in YML for $RESOURCE_NAME."
+    _log_err "Missing 'sourceName' value in version for $RESOURCE_NAME."
     exit 1
   fi
 
   if _is_empty "$IMAGE_TAG"; then
-    _log_err "Missing 'seed.versionName' value in YML for $RESOURCE_NAME."
+    _log_err "Missing 'versionName' value in version for $RESOURCE_NAME."
     exit 1
   fi
 
