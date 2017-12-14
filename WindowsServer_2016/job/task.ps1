@@ -1,11 +1,18 @@
 Function task() {
-  exec_cmd dir
+  <% _.each(obj.script, function(cmd) { %>
+    exec_cmd '<%= cmd %>'
+  <% }) %>
 }
 
 Function main() {
+  $global:is_success = $TRUE
   Try
   {
-    exec_grp "task" "Executing Task"
+    exec_grp "task" "Executing Task $TASK_NAME"
+  }
+  Catch
+  {
+    $global:is_success = $FALSE
   }
   Finally
   {
