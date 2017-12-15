@@ -21,17 +21,15 @@ Function on_failure() {
 
 Function before_exit() {
   if ($global:is_success) {
-    if (Get-Command "on_success" -errorAction SilentlyContinue)
-    {
+    <% if (obj.onSuccess && !_.isEmpty(obj.onSuccess.script)) { %>
       exec_cmd "on_success"
-    }
+    <% } %>
 
     Write-Output "__SH__SCRIPT_END_SUCCESS__";
   } else {
-    if (Get-Command "on_failure" -errorAction SilentlyContinue)
-    {
+    <% if (obj.onFailure && !_.isEmpty(obj.onFailure.script)) { %>
       exec_cmd "on_failure"
-    }
+    <% } %>
 
     Write-Output "__SH__SCRIPT_END_FAILURE__";
   }
