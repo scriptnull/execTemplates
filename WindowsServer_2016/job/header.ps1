@@ -1,5 +1,10 @@
 Function before_exit() {
   if ($global:is_success) {
+    if (Get-Command "on_success" -errorAction SilentlyContinue)
+    {
+      exec_cmd "on_success"
+    }
+
     Write-Output "__SH__SCRIPT_END_SUCCESS__";
   } else {
     Write-Output "__SH__SCRIPT_END_FAILURE__";
