@@ -6,7 +6,7 @@ Function task() {
 <% if (obj.onSuccess) { %>
 Function on_success() {
   <% _.each(obj.onSuccess.script, function(cmd) { %>
-    Invoke-Expression $'<%= cmd %>'
+    Invoke-Expression '<%= cmd %>'
   <% }); %>
 }
 <% } %>
