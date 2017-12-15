@@ -1,5 +1,9 @@
 Function before_exit() {
-  echo "__SH__SCRIPT_END_SUCCESS__";
+  if ($global:is_success) {
+    Write-Output "__SH__SCRIPT_END_SUCCESS__";
+  } else {
+    Write-Output "__SH__SCRIPT_END_FAILURE__";
+  }
 }
 
 Function exec_cmd([string]$cmd) {
@@ -7,18 +11,31 @@ Function exec_cmd([string]$cmd) {
   $cmd_start_timestamp = Get-Date -format "%s"
   Write-Output "__SH__CMD__START__|{`"type`":`"cmd`",`"sequenceNumber`":`"$cmd_start_timestamp`",`"id`":`"$cmd_uuid`"}|$cmd"
 
-  # TODO: export current_cmd and current_cmd_uuid
-
-  Invoke-Expression $cmd
-
-  # TODO: unset current_grp and current_grp_uuid
-
-  # TODO: Get the real exit code from the command and set group_status
   $cmd_status = 0
+  $ErrorActionPreference = "Stop"
 
-  $cmd_end_timestamp = Get-Date -format "%s"
-  Write-Output ""
-  Write-Output "__SH__CMD__END__|{`"type`":`"cmd`",`"sequenceNumber`":`"$cmd_end_timestamp`",`"id`":`"$cmd_uuid`",`"exitcode`":`"$cmd_status`"}|$cmd"
+  Try
+  {
+    $global:LASTEXITCODE = 0;
+    Invoke-Expression $cmd
+    $ret = $LASTEXITCODE
+    if ($ret -ne 0) {
+      $cmd_status = $ret
+      Throw
+    }
+  }
+  Catch
+  {
+    $cmd_status = 1
+    Write-Output $_
+    Throw
+  }
+  Finally
+  {
+    $cmd_end_timestamp = Get-Date -format "%s"
+    Write-Output ""
+    Write-Output "__SH__CMD__END__|{`"type`":`"cmd`",`"sequenceNumber`":`"$cmd_end_timestamp`",`"id`":`"$cmd_uuid`",`"exitcode`":`"$cmd_status`"}|$cmd"
+  }
 }
 
 Function exec_grp([string]$group_name, [string]$group_message,[Bool]$is_shown = $TRUE) {
@@ -32,16 +49,21 @@ Function exec_grp([string]$group_name, [string]$group_message,[Bool]$is_shown = 
   Write-Output ""
   Write-Output "__SH__GROUP__START__|{`"type`":`"grp`",`"sequenceNumber`":`"$group_start_timestamp`",`"id`":`"$group_uuid`",`"is_shown`":`"$is_shown`"}|$group_message"
 
-  # TODO: export current_grp and current_grp_uuid
-
-  Invoke-Expression $group_name
-
-  # TODO: unset current_grp and current_grp_uuid
-
-  # TODO: Get the real exit code from the command and set group_status
   $group_status = 0
 
-  # TODO: migrate to unix time if this does not work
-  $group_end_timestamp = Get-Date -format "%s"
-  Write-Output "__SH__GROUP__END__|{`"type`":`"grp`",`"sequenceNumber`":`"$group_end_timestamp`",`"id`":`"$group_uuid`",`"is_shown`":`"$is_shown`",`"exitcode`":`"$group_status`"}|$group_message"
+  Try
+  {
+    Invoke-Expression $group_name
+  }
+  Catch
+  {
+    $group_status = 1
+    Throw
+  }
+  Finally
+  {
+    # TODO: migrate to unix time if this does not work
+    $group_end_timestamp = Get-Date -format "%s"
+    Write-Output "__SH__GROUP__END__|{`"type`":`"grp`",`"sequenceNumber`":`"$group_end_timestamp`",`"id`":`"$group_uuid`",`"is_shown`":`"$is_shown`",`"exitcode`":`"$group_status`"}|$group_message"
+  }
 }
