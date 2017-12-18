@@ -55,7 +55,7 @@ Function main() {
   $global:is_success = $TRUE
   Try
   {
-    exec_grp "task" "Executing Task $TASK_NAME"
+    exec_grp "task" "Executing Task $env:TASK_NAME"
   }
   Catch
   {
