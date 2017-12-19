@@ -45,6 +45,10 @@ before_exit() {
   fi
 }
 
+on_error() {
+  exit $?
+}
+
 exec_cmd() {
   cmd=$@
   cmd_uuid=$(cat /proc/sys/kernel/random/uuid)
@@ -53,6 +57,8 @@ exec_cmd() {
 
   export current_cmd=$cmd
   export current_cmd_uuid=$cmd_uuid
+
+  trap on_error ERR
 
   eval "$cmd"
   cmd_status=$?
