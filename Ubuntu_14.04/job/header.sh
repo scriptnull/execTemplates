@@ -46,17 +46,6 @@ before_exit() {
 }
 
 exec_cmd() {
-  begin_cmd "$@"
-
-  cmd=$@
-
-  eval "$cmd"
-  cmd_status=$?
-
-  close_cmd $cmd_status
-}
-
-begin_cmd() {
   cmd=$@
   cmd_uuid=$(cat /proc/sys/kernel/random/uuid)
   cmd_start_timestamp=`date +"%s"`
@@ -64,37 +53,26 @@ begin_cmd() {
 
   export current_cmd=$cmd
   export current_cmd_uuid=$cmd_uuid
-}
 
-close_cmd() {
-  cmd_status=$1
+  eval "$cmd"
+  cmd_status=$?
 
-  if [ -z $cmd_status ]; then
-    cmd_status=0
+  unset current_cmd
+  unset current_cmd_uuid
+
+  if [ "$2" ]; then
+    echo $2;
   fi
 
   cmd_end_timestamp=`date +"%s"`
   # If cmd output has no newline at end, marker parsing
   # would break. Hence force a newline before the marker.
   echo ""
-  echo "__SH__CMD__END__|{\"type\":\"cmd\",\"sequenceNumber\":\"$cmd_end_timestamp\",\"id\":\"$current_cmd_uuid\",\"exitcode\":\"$cmd_status\"}|$current_cmd"
-
-  unset current_cmd
-  unset current_cmd_uuid
+  echo "__SH__CMD__END__|{\"type\":\"cmd\",\"sequenceNumber\":\"$cmd_start_timestamp\",\"id\":\"$cmd_uuid\",\"exitcode\":\"$cmd_status\"}|$cmd"
+  return $cmd_status
 }
 
 exec_grp() {
-  begin_grp "$@"
-  group_name=$1
-  group_status=0
-
-  eval "$group_name"
-
-  close_grp $grp_status
-  return $group_status
-}
-
-begin_grp() {
   # First argument is function to execute
   # Second argument is function description to be shown
   # Third argument is whether the group should be shown or not
@@ -112,21 +90,21 @@ begin_grp() {
   group_start_timestamp=`date +"%s"`
   echo ""
   echo "__SH__GROUP__START__|{\"type\":\"grp\",\"sequenceNumber\":\"$group_start_timestamp\",\"id\":\"$group_uuid\",\"is_shown\":\"$is_shown\"}|$group_message"
+  group_status=0
 
   export current_grp=$group_message
   export current_grp_uuid=$group_uuid
-}
 
-close_grp() {
-  grp_status=$1
-
-  if [ -z $grp_status ]; then
-    grp_status=0
-  fi
-
-  group_end_timestamp=`date +"%s"`
-  echo "__SH__GROUP__END__|{\"type\":\"grp\",\"sequenceNumber\":\"$group_end_timestamp\",\"id\":\"$current_grp_uuid\",\"is_shown\":\"$is_shown\",\"exitcode\":\"$group_status\"}|$current_grp"
+  {
+    eval "$group_name"
+  } || {
+    group_status=1
+  }
 
   unset current_grp
   unset current_grp_uuid
+
+  group_end_timestamp=`date +"%s"`
+  echo "__SH__GROUP__END__|{\"type\":\"grp\",\"sequenceNumber\":\"$group_end_timestamp\",\"id\":\"$group_uuid\",\"is_shown\":\"$is_shown\",\"exitcode\":\"$group_status\"}|$group_message"
+  return $group_status
 }
