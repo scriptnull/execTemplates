@@ -4,7 +4,7 @@
 
 <% _.each(obj.commonEnvs, function (commonEnv) { %>
 {
-  export <%= commonEnv %>;
+  export <%= commonEnv.key %>="<%= commonEnv.value %>";
 } || {
   exec_cmd "echo 'An error occurred while trying to export an environment variable: <%= commonEnv.split('=')[0] %> '"
   return 1
@@ -13,7 +13,7 @@
 
 <% _.each(obj.taskEnvs, function (taskEnv) { %>
 {
-  export <%= taskEnv %>;
+  export <%= taskEnv.key %>="<%= taskEnv.value %>";
 } || {
   exec_cmd "echo 'An error occurred while trying to export an environment variable: <%= taskEnv.split('=')[0] %> '"
   return 1
