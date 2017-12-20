@@ -6,7 +6,7 @@
 {
   export <%= commonEnv.key %>="<%= commonEnv.value %>";
 } || {
-  exec_cmd "echo 'An error occurred while trying to export an environment variable: <%= commonEnv.split('=')[0] %> '"
+  exec_cmd "echo 'An error occurred while trying to export an environment variable: <%= commonEnv.key %> '"
   return 1
 }
 <% }); %>
@@ -15,7 +15,7 @@
 {
   export <%= taskEnv.key %>="<%= taskEnv.value %>";
 } || {
-  exec_cmd "echo 'An error occurred while trying to export an environment variable: <%= taskEnv.split('=')[0] %> '"
+  exec_cmd "echo 'An error occurred while trying to export an environment variable: <%= taskEnv.key %> '"
   return 1
 }
 <% }); %>
