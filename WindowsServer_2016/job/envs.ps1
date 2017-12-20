@@ -3,11 +3,19 @@
 #
 
 <% _.each(obj.commonEnvs, function (commonEnv) { %>
-  $env:<%= commonEnv.key %> = "<%= commonEnv.value %>"
+  try {
+    $env:<%= commonEnv.key %> = "<%= commonEnv.value %>"
+  } catch {
+    exec_cmd "Write-Error 'An error occurred while trying to export an environment variable: <%= commonEnv.key %> '"
+  }
 <% }); %>
 
 <% _.each(obj.taskEnvs, function (taskEnv) { %>
-  $env:<%= taskEnv.key %> = "<%= taskEnv.value %>"
+  try {
+    $env:<%= taskEnv.key %> = "<%= taskEnv.value %>"
+  } catch {
+    exec_cmd "Write-Error 'An error occurred while trying to export an environment variable: <%= taskEnv.key %> '"
+  }
 <% }); %>
 
 $env:SHIPPABLE_NODE_ARCHITECTURE = "<%= obj.shippableRuntimeEnvs.shippableNodeArchitecture %>"
