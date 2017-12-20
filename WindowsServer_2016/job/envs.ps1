@@ -3,29 +3,29 @@
 #
 
 <% _.each(obj.commonEnvs, function (commonEnv) { %>
-  Try
-  {
-    $env:<%= commonEnv.key %> = @'
-    <%= commonEnv.value %>
-    '@
-  }
-  Catch
-  {
-    exec_cmd "Write-Output @'An error occurred while trying to export an environment variable: <%= commonEnv.key %> '@"
-  }
+Try
+{
+$env:<%= commonEnv.key %> = @'
+<%= commonEnv.value %>
+'@
+}
+Catch
+{
+  exec_cmd "Write-Output 'An error occurred while trying to export an environment variable: <%= commonEnv.key %> '"
+}
 <% }); %>
 
 <% _.each(obj.taskEnvs, function (taskEnv) { %>
-  Try
-  {
-    $env:<%= taskEnv.key %> = @'
-    <%= taskEnv.value %>
-    '@
-  }
-  Catch
-  {
-    exec_cmd "Write-Output @'An error occurred while trying to export an environment variable: <%= taskEnv.key %> '@"
-  }
+Try
+{
+$env:<%= taskEnv.key %> = @'
+<%= taskEnv.value %>
+'@
+}
+Catch
+{
+  exec_cmd "Write-Output 'An error occurred while trying to export an environment variable: <%= taskEnv.key %> '"
+}
 <% }); %>
 
 $env:SHIPPABLE_NODE_ARCHITECTURE = "<%= obj.shippableRuntimeEnvs.shippableNodeArchitecture %>"
