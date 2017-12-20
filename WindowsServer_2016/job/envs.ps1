@@ -3,18 +3,24 @@
 #
 
 <% _.each(obj.commonEnvs, function (commonEnv) { %>
-  try {
+  Try
+  {
     $env:<%= commonEnv.key %> = "<%= commonEnv.value %>"
-  } catch {
-    exec_cmd "Write-Error 'An error occurred while trying to export an environment variable: <%= commonEnv.key %> '"
+  }
+  Catch
+  {
+    exec_cmd "Write-Output 'An error occurred while trying to export an environment variable: <%= commonEnv.key %> '"
   }
 <% }); %>
 
 <% _.each(obj.taskEnvs, function (taskEnv) { %>
-  try {
+  Try
+  {
     $env:<%= taskEnv.key %> = "<%= taskEnv.value %>"
-  } catch {
-    exec_cmd "Write-Error 'An error occurred while trying to export an environment variable: <%= taskEnv.key %> '"
+  }
+  Catch
+  {
+    exec_cmd "Write-Output 'An error occurred while trying to export an environment variable: <%= taskEnv.key %> '"
   }
 <% }); %>
 
