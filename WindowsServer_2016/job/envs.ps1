@@ -18,9 +18,9 @@ Catch
 <% _.each(obj.taskEnvs, function (taskEnv) { %>
 Try
 {
-$env:<%= taskEnv.key %> = @'
+$env:<%= taskEnv.key %> = @"
 <%= taskEnv.value %>
-'@
+"@
 }
 Catch
 {
