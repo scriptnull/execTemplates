@@ -4,7 +4,11 @@
 
 <% _.each(obj.commonEnvs, function (commonEnv) { %>
 {
+  <% if (commonEnv.surroundWithSingleQuotes === true) { %>
+  export <%= commonEnv.key %>='<%= commonEnv.value %>';
+  <% } else { %>
   export <%= commonEnv.key %>="<%= commonEnv.value %>";
+  <% } %>
 } || {
   exec_cmd "echo 'An error occurred while trying to export an environment variable: <%= commonEnv.key %> '"
   return 1
@@ -13,7 +17,11 @@
 
 <% _.each(obj.taskEnvs, function (taskEnv) { %>
 {
+  <% if (taskEnv.surroundWithSingleQuotes === true) { %>
+  export <%= taskEnv.key %>='<%= taskEnv.value %>';
+  <% } else { %>
   export <%= taskEnv.key %>="<%= taskEnv.value %>";
+  <% } %>
 } || {
   exec_cmd "echo 'An error occurred while trying to export an environment variable: <%= taskEnv.key %> '"
   return 1
