@@ -26,8 +26,8 @@ help() {
 check_params() {
   _log_msg "Checking params"
 
-  AWS_ACCESS_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "accessKey" )"
-  AWS_SECRET_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "secretKey" )"
+  AWS_ACCESS_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "aws_access_key_id" )"
+  AWS_SECRET_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "aws_secret_access_key" )"
   RESOURCE_VERSION_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")/version.json"
   AWS_REGION="$( shipctl get_json_value "$RESOURCE_VERSION_PATH" "version.propertyBag.region" )"
 
