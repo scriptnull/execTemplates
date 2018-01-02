@@ -24,10 +24,10 @@ check_params() {
   _log_msg "Checking params"
 
   KUBERNETES_INT="$(shipctl get_integration_resource "$RESOURCE_NAME")"
-  KUBERNETES_KUBECONFIGFILE="$( echo "$KUBERNETES_INT" | jq -r '.kubeConfigContent' )"
+  KUBERNETES_KUBECONFIGFILE="$( echo "$KUBERNETES_INT" | jq -r '.masterKubeConfigContent' )"
 
   if _is_empty "$KUBERNETES_KUBECONFIGFILE"; then
-    _log_err "Missing 'kubeConfigFile' value in $RESOURCE_NAME's integration."
+    _log_err "Missing 'masterKubeConfigContent' value in $RESOURCE_NAME's integration."
     exit 1
   fi
 
@@ -38,7 +38,7 @@ init_scope_configure() {
   _log_msg "Initializing scope configure"
 
   mkdir ~/.kube
-  echo "$KUBERNETES_KUBECONFIGFILE" > /root/.kube/config
+  echo "$KUBERNETES_KUBECONFIGFILE" > ~/.kube/config
 
   _log_success "Successfully initialized scope configure"
 }

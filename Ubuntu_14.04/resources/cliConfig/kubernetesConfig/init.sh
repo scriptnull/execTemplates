@@ -5,9 +5,9 @@ readonly COMMON_DIR="$ROOT_DIR/resources/common"
 readonly HELPERS_PATH="$COMMON_DIR/_helpers.sh"
 readonly LOGGER_PATH="$COMMON_DIR/_logger.sh"
 
-# shellcheck source=Ubuntu_16.04/resources/common/_helpers.sh
+# shellcheck source=Ubuntu_14.04/resources/common/_helpers.sh
 source "$HELPERS_PATH"
-# shellcheck source=Ubuntu_16.04/resources/common/_logger.sh
+# shellcheck source=Ubuntu_14.04/resources/common/_logger.sh
 source "$LOGGER_PATH"
 
 export KUBERNETES_KUBECONFIGFILE=""
@@ -38,7 +38,7 @@ init_scope_configure() {
   _log_msg "Initializing scope configure"
 
   mkdir ~/.kube
-  echo "$KUBERNETES_KUBECONFIGFILE" > /root/.kube/config
+  echo "$KUBERNETES_KUBECONFIGFILE" > ~/.kube/config
 
   _log_success "Successfully initialized scope configure"
 }
