@@ -29,6 +29,7 @@ check_params() {
 
   GCLOUD_JSON_KEY="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "credentialFile" )"
   GCLOUD_PROJECT_NAME="$( shipctl get_integration_resource_field "$RESOURCE_NAME" "projectName" )"
+  SANITIZED_RESOURCE_NAME="$( shipctl get_resource_name "$RESOURCE_NAME" )"
   RESOURCE_PATH="$(shipctl get_resource_meta "$RESOURCE_NAME")"
 
   if _is_empty "$GCLOUD_JSON_KEY"; then
@@ -45,12 +46,10 @@ init_scope_configure() {
   pushd "$RESOURCE_PATH"
   touch key.json
   echo "$GCLOUD_JSON_KEY" > key.json
+  echo "export ""$SANITIZED_RESOURCE_NAME""_INTEGRATION_CREDENTIALFILE_PATH=$RESOURCE_PATH/key.json" >> "$SHIPPABLE_INTEGRATION_ENVS_PATH"
   gcloud -q auth activate-service-account --key-file "key.json"
   gcloud config set project "$GCLOUD_PROJECT_NAME"
   popd
-
-  # TO-DO: we need to export INTEGRATION_CREDENTIALFILE_PATH
-  # which will be done when the new design for same is in place
 
   _log_success "Successfully initialized scope configure"
 }
