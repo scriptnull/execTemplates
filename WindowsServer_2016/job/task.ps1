@@ -1,7 +1,27 @@
+Function init_integrations() {
+  <% if (obj.integrationInitScripts.length > 0) { %>
+    exec_cmd 'echo "Initializing CLI integrations"'
+    <% _.each(obj.integrationInitScripts, function (integrationInitScript) { %>
+    <%= integrationInitScript %>
+    <% }); %>
+  <% } %>
+}
+
+Function cleanup_integrations() {
+  <% if (obj.integrationCleanupScripts.length > 0) { %>
+    exec_cmd 'echo "Cleaning CLI integrations"'
+    <% _.each(obj.integrationCleanupScripts, function (integrationCleanupScript) { %>
+    <%= integrationCleanupScript %>
+    <% }); %>
+  <% } %>
+}
+
 Function task() {
+  init_integrations
   <% _.each(obj.script, function(cmd) { %>
     exec_cmd '<%= cmd %>'
   <% }) %>
+  cleanup_integrations
 }
 <% if (obj.onSuccess) { %>
 Function on_success() {
