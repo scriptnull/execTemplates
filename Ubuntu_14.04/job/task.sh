@@ -57,6 +57,9 @@ init_integrations() {
     <%= integrationInitScript %>
     <% }); %>
   <% } %>
+
+
+  source $SHIPPABLE_INTEGRATION_ENVS_PATH
 }
 
 task() {

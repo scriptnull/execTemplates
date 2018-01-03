@@ -36,7 +36,7 @@ check_params() {
 init_scope_configure() {
   _log_msg "Initializing scope configure"
 
-  echo "export DIGITALOCEAN_ACCESS_TOKEN=$DO_API_TOKEN" >> $SHIPPABLE_INTEGRATION_ENVS_PATH
+  echo "export DIGITALOCEAN_ACCESS_TOKEN=$DO_API_TOKEN" >> "$SHIPPABLE_INTEGRATION_ENVS_PATH"
 
   _log_success "Successfully initialized scope configure"
 }
