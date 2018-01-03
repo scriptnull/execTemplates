@@ -3,4 +3,4 @@ build:
   ci:
     - apt-get install -y shellcheck
     # Ignore job templates for now.
-    - shellcheck -s bash $(find ./ -name "*.sh" -not -path "*/job/*.sh")
+    - while IFS= read -r -d $'\0' FILE_PATH; do { shellcheck -x -s bash "$FILE_PATH"; } || { exit 1; }; done < <(find ./ -name "*.sh" -not -path "*/job/*.sh" -print0)
