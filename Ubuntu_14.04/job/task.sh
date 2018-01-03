@@ -58,7 +58,6 @@ init_integrations() {
     <% }); %>
   <% } %>
 
-
   source $SHIPPABLE_INTEGRATION_ENVS_PATH
 }
 
