@@ -46,7 +46,7 @@ init_scope_configure() {
   pushd "$RESOURCE_PATH"
   touch key.json
   echo "$GCLOUD_JSON_KEY" > key.json
-  echo "export "$SANITIZED_RESOURCE_NAME"_INTEGRATION_CREDENTIALFILE_PATH=$RESOURCE_PATH/key.json" >> "$SHIPPABLE_INTEGRATION_ENVS_PATH"
+  echo "export ""$SANITIZED_RESOURCE_NAME""_INTEGRATION_CREDENTIALFILE_PATH=$RESOURCE_PATH/key.json" >> "$SHIPPABLE_INTEGRATION_ENVS_PATH"
   gcloud -q auth activate-service-account --key-file "key.json"
   gcloud config set project "$GCLOUD_PROJECT_NAME"
   popd
