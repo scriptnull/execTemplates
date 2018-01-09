@@ -37,4 +37,5 @@ if [ "$TASK_IN_CONTAINER" == true ]; then
   export TASK_CONTAINER_IMAGE="<%= obj.shippableRuntimeEnvs.taskContainerImage %>"
   export TASK_CONTAINER_IMAGE_SHOULD_PULL="<%= obj.shippableRuntimeEnvs.shouldPullTaskContainerImage %>"
   export TASK_CONTAINER_COMMAND="<%= obj.shippableRuntimeEnvs.taskContainerCommand %>"
+  export TASK_CONTAINER_NAME="<%= obj.shippableRuntimeEnvs.taskContainerName %>"
 fi
