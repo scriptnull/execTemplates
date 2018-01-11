@@ -78,7 +78,7 @@ init() {
   RESOURCE_NAME=${ARGS[0]}
   SCOPES=${ARGS[1]}
 
-  _log_grp "Initializing AWS Keys for resource $RESOURCE_NAME"
+  _log_grp "Initializing ECR for resource $RESOURCE_NAME"
 
   check_params
   init_scope_configure
