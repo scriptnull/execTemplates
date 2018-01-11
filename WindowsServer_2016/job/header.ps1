@@ -1,6 +1,7 @@
 Function exec_cmd([string]$cmd) {
   $cmd_uuid = [guid]::NewGuid().Guid
-  $cmd_start_timestamp = Get-Date -format "%s"
+  $date_time = (Get-Date).ToUniversalTime()
+  $cmd_start_timestamp = [System.Math]::Truncate((Get-Date -Date $date_time -UFormat %s))
   Write-Output "__SH__CMD__START__|{`"type`":`"cmd`",`"sequenceNumber`":`"$cmd_start_timestamp`",`"id`":`"$cmd_uuid`"}|$cmd"
 
   $cmd_status = 0
@@ -24,7 +25,8 @@ Function exec_cmd([string]$cmd) {
   }
   Finally
   {
-    $cmd_end_timestamp = Get-Date -format "%s"
+    $date_time = (Get-Date).ToUniversalTime()
+    $cmd_end_timestamp = [System.Math]::Truncate((Get-Date -Date $date_time -UFormat %s))
     Write-Output ""
     Write-Output "__SH__CMD__END__|{`"type`":`"cmd`",`"sequenceNumber`":`"$cmd_end_timestamp`",`"id`":`"$cmd_uuid`",`"exitcode`":`"$cmd_status`"}|$cmd"
   }
@@ -36,8 +38,8 @@ Function exec_grp([string]$group_name, [string]$group_message,[Bool]$is_shown = 
   }
 
   $group_uuid = [guid]::NewGuid().Guid
-  # TODO: migrate to unix time if this does not work
-  $group_start_timestamp = Get-Date -format "%s"
+  $date_time = (Get-Date).ToUniversalTime()
+  $group_start_timestamp = [System.Math]::Truncate((Get-Date -Date $date_time -UFormat %s))
   Write-Output ""
   Write-Output "__SH__GROUP__START__|{`"type`":`"grp`",`"sequenceNumber`":`"$group_start_timestamp`",`"id`":`"$group_uuid`",`"is_shown`":`"$is_shown`"}|$group_message"
 
@@ -54,8 +56,8 @@ Function exec_grp([string]$group_name, [string]$group_message,[Bool]$is_shown = 
   }
   Finally
   {
-    # TODO: migrate to unix time if this does not work
-    $group_end_timestamp = Get-Date -format "%s"
+    $date_time = (Get-Date).ToUniversalTime()
+    $group_end_timestamp = [System.Math]::Truncate((Get-Date -Date $date_time -UFormat %s))
     Write-Output "__SH__GROUP__END__|{`"type`":`"grp`",`"sequenceNumber`":`"$group_end_timestamp`",`"id`":`"$group_uuid`",`"is_shown`":`"$is_shown`",`"exitcode`":`"$group_status`"}|$group_message"
   }
 }
