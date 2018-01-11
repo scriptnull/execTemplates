@@ -7,11 +7,10 @@ function boot() {
 }
 
 Function wait_for_exit() {
-  docker wait $env:TASK_CONTAINER_NAME
-  $ret = $LASTEXITCODE
+  $ret = Invoke-Expression "docker wait $env:TASK_CONTAINER_NAME"
+  $msg = "Container $env:TASK_CONTAINER_NAME exited with exit code: $ret"
+  exec_cmd "echo $msg"
   if ($ret -ne 0) {
-    $msg = "Container $TASK_CONTAINER_NAME exited with exit code: $ret"
-    exec_cmd "echo $msg"
     throw $msg
   }
 }
@@ -29,7 +28,7 @@ Function main() {
   Try
   {
     exec_grp "boot" "Booting up container for task: $env:TASK_NAME"
-    exec_grp "wait_for_exit" "Waiting for container:$env:TASK_CONTAINER_NAME to exit" $FALSE
+    exec_grp "wait_for_exit" "Waiting for container: $env:TASK_CONTAINER_NAME to exit" $FALSE
   }
   Catch
   {
