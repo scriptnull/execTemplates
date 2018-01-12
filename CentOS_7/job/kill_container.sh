@@ -3,7 +3,8 @@
 #
 
 kill_container() {
-  sudo docker stop -t=0 $TASK_CONTAINER_NAME
+  # Redirecting stdout to prevent it from showing up in Error console group
+  sudo docker stop -t=0 $TASK_CONTAINER_NAME > /dev/null
 }
 
 exec_grp "kill_container" "Stopping container $TASK_CONTAINER_NAME" false
