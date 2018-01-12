@@ -24,6 +24,8 @@ wait_for_exit() {
 
   ret=$(sudo docker wait $TASK_CONTAINER_NAME)
   exec_cmd "echo Container $TASK_CONTAINER_NAME exited with exit code: $ret"
+  sudo docker rm -fv $TASK_CONTAINER_NAME || true
+
   trap before_exit EXIT
   [ "$ret" != 0 ] && return $ret;
 
