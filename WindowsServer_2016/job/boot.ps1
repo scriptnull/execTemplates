@@ -3,7 +3,7 @@ function boot() {
     exec_cmd "docker pull $env:TASK_CONTAINER_IMAGE"
   }
 
-  exec_cmd "docker run -d $env:TASK_CONTAINER_OPTIONS $env:TASK_CONTAINER_IMAGE $env:TASK_CONTAINER_COMMAND"
+  exec_cmd "docker run $env:TASK_CONTAINER_OPTIONS $env:TASK_CONTAINER_IMAGE $env:TASK_CONTAINER_COMMAND"
 }
 
 Function wait_for_exit() {
