@@ -10,7 +10,7 @@ boot() {
     exec_cmd "sudo docker pull $TASK_CONTAINER_IMAGE"
   fi
 
-  exec_cmd "sudo docker run -d $TASK_CONTAINER_OPTIONS $TASK_CONTAINER_IMAGE $TASK_CONTAINER_COMMAND"
+  exec_cmd "sudo docker run $TASK_CONTAINER_OPTIONS $TASK_CONTAINER_IMAGE $TASK_CONTAINER_COMMAND"
   ret=$?
   trap before_exit EXIT
   [ "$ret" != 0 ] && return $ret;
