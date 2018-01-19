@@ -7,6 +7,9 @@ function boot() {
 }
 
 Function wait_for_exit() {
+  $msg = "Waiting for container $env:TASK_CONTAINER_NAME to exit"
+  exec_cmd "echo $msg"
+
   $ret = Invoke-Expression "docker wait $env:TASK_CONTAINER_NAME"
   $msg = "Container $env:TASK_CONTAINER_NAME exited with exit code: $ret"
   exec_cmd "echo $msg"
