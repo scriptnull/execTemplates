@@ -31,7 +31,7 @@ Function main() {
   Try
   {
     exec_grp "boot" "Booting up container for task: $env:TASK_NAME"
-    exec_grp "wait_for_exit" "Waiting for container: $env:TASK_CONTAINER_NAME to exit" $FALSE
+    wait_for_exit
   }
   Catch
   {
