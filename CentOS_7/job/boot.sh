@@ -26,7 +26,7 @@ wait_for_exit() {
   exec_cmd "echo Container $TASK_CONTAINER_NAME exited with exit code: $container_exit_code"
 
   trap before_exit EXIT
-  [ "$container_exit_code" != 0 ] && return $container_exit_code
+  [ "$container_exit_code" != 0 ] && return $container_exit_code;
 
   is_success=true
 }
