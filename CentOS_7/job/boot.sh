@@ -19,15 +19,14 @@ boot() {
 }
 
 wait_for_exit() {
-  ret=0
   is_success=false
 
-  exec_cmd "echo Waiting for container $TASK_CONTAINER_NAME to exit"
+  exec_cmd "echo Waiting for $TASK_CONTAINER_NAME to exit"
+  container_exit_code=$(sudo docker wait $TASK_CONTAINER_NAME)
+  exec_cmd "echo Container $TASK_CONTAINER_NAME exited with exit code: $container_exit_code"
 
-  ret=$(sudo docker wait $TASK_CONTAINER_NAME)
-  exec_cmd "echo Container $TASK_CONTAINER_NAME exited with exit code: $ret"
   trap before_exit EXIT
-  [ "$ret" != 0 ] && return $ret;
+  [ "$container_exit_code" != 0 ] && return $container_exit_code
 
   is_success=true
 }
@@ -36,4 +35,4 @@ trap before_exit EXIT
 exec_grp "boot" "Booting up container for task: $TASK_NAME" "true"
 
 trap before_exit EXIT
-exec_grp "wait_for_exit" "Waiting for container:$TASK_CONTAINER_NAME to exit" "false"
+wait_for_exit
