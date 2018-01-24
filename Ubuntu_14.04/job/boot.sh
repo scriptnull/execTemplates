@@ -24,6 +24,7 @@ wait_for_exit() {
   exec_cmd "echo Waiting for $TASK_CONTAINER_NAME to exit"
   container_exit_code=$(sudo docker wait $TASK_CONTAINER_NAME)
   exec_cmd "echo Container $TASK_CONTAINER_NAME exited with exit code: $container_exit_code"
+  sudo docker rm -fv $TASK_CONTAINER_NAME || true
 
   trap before_exit EXIT
   [ "$container_exit_code" != 0 ] && return $container_exit_code;
