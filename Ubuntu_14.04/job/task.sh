@@ -63,7 +63,7 @@ init_integrations() {
 
 task() {
   ret=0
-  is_success=false
+  is_success=""
 
   init_integrations
   trap before_exit EXIT
@@ -83,13 +83,18 @@ task() {
   // and override what we need.
   %>
   trap before_exit EXIT
-  [ "$ret" != 0 ] && return $ret;
+  if [ "$ret" != 0 ]; then
+    is_success=false
+    return $ret;
+  fi
   <% }); %>
 
   cleanup_integrations
   trap before_exit EXIT
-  [ "$ret" != 0 ] && return $ret;
-
+  if [ "$ret" != 0 ]; then
+    is_success=false
+    return $ret;
+  fi
   ret=0
   is_success=true
   return $ret
