@@ -6,18 +6,27 @@
 #
 
 before_exit() {
+  return_code=$?
+  exit_code=1;
+  if [ -z "$is_success" ]; then
+    if [ $return_code -eq 0 ]; then
+      is_success=true
+      exit_code=0
+    fi
+  fi
+
   # Flush any remaining console
   echo $1
   echo $2
 
   if [ -n "$current_cmd_uuid" ]; then
     current_timestamp=`date +"%s"`
-    echo "__SH__CMD__END__|{\"type\":\"cmd\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_cmd_uuid\",\"exitcode\":\"1\"}|$current_cmd"
+    echo "__SH__CMD__END__|{\"type\":\"cmd\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_cmd_uuid\",\"exitcode\":\"$exit_code\"}|$current_cmd"
   fi
 
   if [ -n "$current_grp_uuid" ]; then
     current_timestamp=`date +"%s"`
-    echo "__SH__GROUP__END__|{\"type\":\"grp\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_grp_uuid\",\"is_shown\":\"false\",\"exitcode\":\"1\"}|$current_grp"
+    echo "__SH__GROUP__END__|{\"type\":\"grp\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_grp_uuid\",\"is_shown\":\"false\",\"exitcode\":\"$exit_code\"}|$current_grp"
   fi
 
   if [ "$is_success" == true ]; then
