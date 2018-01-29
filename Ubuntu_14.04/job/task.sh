@@ -66,8 +66,12 @@ task() {
   is_success=""
 
   init_integrations
+  ret=$?
   trap before_exit EXIT
-  [ "$ret" != 0 ] && return $ret;
+  if [ "$ret" != 0 ]; then
+    is_success=false
+    return $ret;
+  fi
 
   <% _.each(obj.script, function(cmd) { %>
   <% var cmdEscaped = cmd.replace(/\\/g, '\\\\')%>
@@ -90,6 +94,7 @@ task() {
   <% }); %>
 
   cleanup_integrations
+  ret=$?
   trap before_exit EXIT
   if [ "$ret" != 0 ]; then
     is_success=false
