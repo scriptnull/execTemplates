@@ -6,7 +6,6 @@
 #
 
 before_exit() {
-  # Flush any remaining console
   return_code=$?
   exit_code=1;
   if [ -z "$is_success" ]; then
@@ -16,6 +15,7 @@ before_exit() {
     fi
   fi
 
+  # Flush any remaining console
   echo $1
   echo $2
 
