@@ -19,35 +19,64 @@ before_exit() {
   echo $1
   echo $2
 
-  if [ -n "$current_cmd_uuid" ]; then
-    current_timestamp=`date +"%s"`
-    echo "__SH__CMD__END__|{\"type\":\"cmd\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_cmd_uuid\",\"exitcode\":\"$exit_code\"}|$current_cmd"
-  fi
-
-  if [ -n "$current_grp_uuid" ]; then
-    current_timestamp=`date +"%s"`
-    echo "__SH__GROUP__END__|{\"type\":\"grp\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_grp_uuid\",\"is_shown\":\"false\",\"exitcode\":\"$exit_code\"}|$current_grp"
-  fi
-
   if [ "$is_success" == true ]; then
     # "on_success" is only defined for the last task, so execute "always" only
     # if this is the last task.
-    if [ "$(type -t on_success)" == "function" ]; then
-      exec_cmd "on_success" || true
+    # running always and on_success inside a subshell to handle the scenario of
+    # exit 0/exit 1 in these sections not failing the build
+    subshell_exit_code=0
+    (
+      if [ "$(type -t on_success)" == "function" ]; then
+        exec_cmd "on_success" || true
+
+        if [ "$(type -t always)" == "function" ]; then
+          exec_cmd "always" || true
+        fi
+      fi
+    # subshell_exit_code will be set to 1 only when there is a exit 1 command in
+    # the on_success & on_failure sections. exit 1 in these sections, is
+    # considered as failure
+    ) || subshell_exit_code=1
+
+    if [ -n "$current_cmd_uuid" ]; then
+      current_timestamp=`date +"%s"`
+      echo "__SH__CMD__END__|{\"type\":\"cmd\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_cmd_uuid\",\"exitcode\":\"$subshell_exit_code\"}|$current_cmd"
+    fi
+
+    if [ -n "$current_grp_uuid" ]; then
+      current_timestamp=`date +"%s"`
+      echo "__SH__GROUP__END__|{\"type\":\"grp\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_grp_uuid\",\"is_shown\":\"false\",\"exitcode\":\"$subshell_exit_code\"}|$current_grp"
+    fi
+
+    if [ $subshell_exit_code -eq 0 ]; then
+      echo "__SH__SCRIPT_END_SUCCESS__";
+    else
+      echo "__SH__SCRIPT_END_FAILURE__";
+    fi
+  else
+    # running always and on_failure inside a subshell to handle the scenario of
+    # exit 0/exit 1 in these sections not failing the build
+    (
+      if [ "$(type -t on_failure)" == "function" ]; then
+        exec_cmd "on_failure" || true
+      fi
 
       if [ "$(type -t always)" == "function" ]; then
         exec_cmd "always" || true
       fi
+    # adding || true so that the script doesn't exit when on_failure/always
+    # section has exit 1. if the script exits the command and group will not be
+    # closed correctly.
+    ) || true
+
+    if [ -n "$current_cmd_uuid" ]; then
+      current_timestamp=`date +"%s"`
+      echo "__SH__CMD__END__|{\"type\":\"cmd\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_cmd_uuid\",\"exitcode\":\"$exit_code\"}|$current_cmd"
     fi
 
-    echo "__SH__SCRIPT_END_SUCCESS__";
-  else
-    if [ "$(type -t on_failure)" == "function" ]; then
-      exec_cmd "on_failure" || true
-    fi
-
-    if [ "$(type -t always)" == "function" ]; then
-      exec_cmd "always" || true
+    if [ -n "$current_grp_uuid" ]; then
+      current_timestamp=`date +"%s"`
+      echo "__SH__GROUP__END__|{\"type\":\"grp\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_grp_uuid\",\"is_shown\":\"false\",\"exitcode\":\"$exit_code\"}|$current_grp"
     fi
 
     echo "__SH__SCRIPT_END_FAILURE__";
