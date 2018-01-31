@@ -19,6 +19,11 @@ before_exit() {
   echo $1
   echo $2
 
+  if [ -n "$current_cmd_uuid" ]; then
+    current_timestamp=`date +"%s"`
+    echo "__SH__CMD__END__|{\"type\":\"cmd\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_cmd_uuid\",\"exitcode\":\"$exit_code\"}|$current_cmd"
+  fi
+
   if [ "$is_success" == true ]; then
     # "on_success" is only defined for the last task, so execute "always" only
     # if this is the last task.
@@ -37,11 +42,6 @@ before_exit() {
     # the on_success & on_failure sections. exit 1 in these sections, is
     # considered as failure
     ) || subshell_exit_code=1
-
-    if [ -n "$current_cmd_uuid" ]; then
-      current_timestamp=`date +"%s"`
-      echo "__SH__CMD__END__|{\"type\":\"cmd\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_cmd_uuid\",\"exitcode\":\"$subshell_exit_code\"}|$current_cmd"
-    fi
 
     if [ -n "$current_grp_uuid" ]; then
       current_timestamp=`date +"%s"`
@@ -65,14 +65,9 @@ before_exit() {
         exec_cmd "always" || true
       fi
     # adding || true so that the script doesn't exit when on_failure/always
-    # section has exit 1. if the script exits the command and group will not be
+    # section has exit 1. if the script exits the group will not be
     # closed correctly.
     ) || true
-
-    if [ -n "$current_cmd_uuid" ]; then
-      current_timestamp=`date +"%s"`
-      echo "__SH__CMD__END__|{\"type\":\"cmd\",\"sequenceNumber\":\"$current_timestamp\",\"id\":\"$current_cmd_uuid\",\"exitcode\":\"$exit_code\"}|$current_cmd"
-    fi
 
     if [ -n "$current_grp_uuid" ]; then
       current_timestamp=`date +"%s"`
@@ -123,8 +118,13 @@ exec_grp() {
   group_name=$1
   group_message=$2
   is_shown=true
+  group_close=true
   if [ ! -z "$3" ]; then
     is_shown=$3
+  fi
+
+  if [ ! -z "$4" ]; then
+    group_close=$4
   fi
 
   if [ -z "$group_message" ]; then
@@ -145,10 +145,12 @@ exec_grp() {
     group_status=1
   }
 
-  unset current_grp
-  unset current_grp_uuid
+  if [ "$group_close" == "true" ]; then
+    unset current_grp
+    unset current_grp_uuid
 
-  group_end_timestamp=`date +"%s"`
-  echo "__SH__GROUP__END__|{\"type\":\"grp\",\"sequenceNumber\":\"$group_end_timestamp\",\"id\":\"$group_uuid\",\"is_shown\":\"$is_shown\",\"exitcode\":\"$group_status\"}|$group_message"
+    group_end_timestamp=`date +"%s"`
+    echo "__SH__GROUP__END__|{\"type\":\"grp\",\"sequenceNumber\":\"$group_end_timestamp\",\"id\":\"$group_uuid\",\"is_shown\":\"$is_shown\",\"exitcode\":\"$group_status\"}|$group_message"
+  fi
   return $group_status
 }
