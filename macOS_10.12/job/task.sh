@@ -124,4 +124,4 @@ trap before_exit EXIT
 exec_grp "add_subscription_ssh_key" "Adding Subscription SSH Key" "false"
 
 trap before_exit EXIT
-exec_grp "task" "Executing task: $TASK_NAME"
+exec_grp "task" "Executing task: $TASK_NAME" "true" "false"
