@@ -26,7 +26,14 @@ Function task() {
 <% if (obj.onSuccess) { %>
 Function on_success() {
   <% _.each(obj.onSuccess.script, function(cmd) { %>
-    Invoke-Expression '<%= cmd %>'
+    Try
+    {
+      Invoke-Expression '<%= cmd %>'
+    }
+    Catch
+    {
+      Write-Output $_
+    }
   <% }); %>
 }
 <% } %>
@@ -34,7 +41,14 @@ Function on_success() {
 <% if (obj.onFailure) { %>
 Function on_failure() {
   <% _.each(obj.onFailure.script, function(cmd) { %>
-    Invoke-Expression '<%= cmd %>'
+    Try
+    {
+      Invoke-Expression '<%= cmd %>'
+    }
+    Catch
+    {
+      Write-Output $_
+    }
   <% }); %>
 }
 <% } %>
@@ -42,7 +56,14 @@ Function on_failure() {
 <% if (obj.always) { %>
 Function always() {
   <% _.each(obj.always.script, function(cmd) { %>
-    Invoke-Expression '<%= cmd %>'
+    Try
+    {
+      Invoke-Expression '<%= cmd %>'
+    }
+    Catch
+    {
+      Write-Output $_
+    }
   <% }); %>
 }
 <% } %>
