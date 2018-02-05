@@ -32,7 +32,7 @@ Function exec_cmd([string]$cmd) {
   }
 }
 
-Function exec_grp([string]$group_name, [string]$group_message,[Bool]$is_shown = $TRUE) {
+Function exec_grp([string]$group_name, [string]$group_message, [Bool]$is_shown = $TRUE, [Bool]$group_close = $TRUE) {
   if (-not ($group_message)) {
     group_message=$group_name
   }
@@ -45,6 +45,10 @@ Function exec_grp([string]$group_name, [string]$group_message,[Bool]$is_shown = 
 
   $group_status = 0
 
+  # export envs to provide information for closing the group outside exec_grp
+  $env:current_grp = $group_message
+  $env:current_grp_uuid = $group_uuid
+
   Try
   {
     Invoke-Expression $group_name
@@ -56,8 +60,13 @@ Function exec_grp([string]$group_name, [string]$group_message,[Bool]$is_shown = 
   }
   Finally
   {
-    $date_time = (Get-Date).ToUniversalTime()
-    $group_end_timestamp = [System.Math]::Truncate((Get-Date -Date $date_time -UFormat %s))
-    Write-Output "__SH__GROUP__END__|{`"type`":`"grp`",`"sequenceNumber`":`"$group_end_timestamp`",`"id`":`"$group_uuid`",`"is_shown`":`"$is_shown`",`"exitcode`":`"$group_status`"}|$group_message"
+    if ($group_close) {
+      $env:current_grp = ""
+      $env:current_grp_uuid = ""
+
+      $date_time = (Get-Date).ToUniversalTime()
+      $group_end_timestamp = [System.Math]::Truncate((Get-Date -Date $date_time -UFormat %s))
+      Write-Output "__SH__GROUP__END__|{`"type`":`"grp`",`"sequenceNumber`":`"$group_end_timestamp`",`"id`":`"group_uuid`",`"is_shown`":`"$is_shown`",`"exitcode`":`"$group_status`"}|$group_message"
+    }
   }
 }

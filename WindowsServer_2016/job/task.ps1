@@ -93,6 +93,18 @@ Function before_exit() {
       exec_cmd "always"
     <% } %>
 
+    if ($env:current_grp_uuid) {
+      $date_time = (Get-Date).ToUniversalTime()
+      $current_timestamp = [System.Math]::Truncate((Get-Date -Date $date_time -UFormat %s))
+
+      $group_status = 0
+      if ($global:FAIL_SHIPPABLE_BUILD) {
+        $group_status = 1
+      }
+
+      Write-Output "__SH__GROUP__END__|{`"type`":`"grp`",`"sequenceNumber`":`"$current_timestamp`",`"id`":`"$env:current_grp_uuid`",`"is_shown`":`"false`",`"exitcode`":`"$group_status`"}|$env:current_grp"
+    }
+
     if ($global:FAIL_SHIPPABLE_BUILD) {
       Write-Output "__SH__SCRIPT_END_FAILURE__";
     } else {
@@ -107,6 +119,14 @@ Function before_exit() {
       exec_cmd "always"
     <% } %>
 
+    if ($env:current_grp_uuid) {
+      $date_time = (Get-Date).ToUniversalTime()
+      $current_timestamp = [System.Math]::Truncate((Get-Date -Date $date_time -UFormat %s))
+      $group_status = 1
+
+      Write-Output "__SH__GROUP__END__|{`"type`":`"grp`",`"sequenceNumber`":`"$current_timestamp`",`"id`":`"$env:current_grp_uuid`",`"is_shown`":`"false`",`"exitcode`":`"$group_status`"}|$env:current_grp"
+    }
+
     Write-Output "__SH__SCRIPT_END_FAILURE__";
   }
 }
@@ -115,7 +135,7 @@ Function main() {
   $global:is_success = $TRUE
   Try
   {
-    exec_grp "task" "Executing Task $env:TASK_NAME"
+    exec_grp "task" "Executing Task $env:TASK_NAME" $TRUE $FALSE
   }
   Catch
   {
