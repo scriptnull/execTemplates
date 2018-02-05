@@ -16,6 +16,11 @@ Function cleanup_integrations() {
   <% } %>
 }
 
+Function Fail-ShippableBuild() {
+  $global:FAIL_SHIPPABLE_BUILD = $TRUE
+  Throw "Fail-ShippableBuild called in script"
+}
+
 Function task() {
   init_integrations
   <% _.each(obj.script, function(cmd) { %>
@@ -23,6 +28,7 @@ Function task() {
   <% }) %>
   cleanup_integrations
 }
+
 <% if (obj.onSuccess) { %>
 Function on_success() {
   <% _.each(obj.onSuccess.script, function(cmd) { %>
@@ -33,6 +39,9 @@ Function on_success() {
     Catch
     {
       Write-Output $_
+      if ($global:FAIL_SHIPPABLE_BUILD) {
+        return
+      }
     }
   <% }); %>
 }
@@ -48,6 +57,9 @@ Function on_failure() {
     Catch
     {
       Write-Output $_
+      if ($global:FAIL_SHIPPABLE_BUILD) {
+        return
+      }
     }
   <% }); %>
 }
@@ -63,6 +75,9 @@ Function always() {
     Catch
     {
       Write-Output $_
+      if ($global:FAIL_SHIPPABLE_BUILD) {
+        return
+      }
     }
   <% }); %>
 }
@@ -78,7 +93,11 @@ Function before_exit() {
       exec_cmd "always"
     <% } %>
 
-    Write-Output "__SH__SCRIPT_END_SUCCESS__";
+    if ($global:FAIL_SHIPPABLE_BUILD) {
+      Write-Output "__SH__SCRIPT_END_FAILURE__";
+    } else {
+      Write-Output "__SH__SCRIPT_END_SUCCESS__";
+    }
   } else {
     <% if (obj.onFailure && !_.isEmpty(obj.onFailure.script)) { %>
       exec_cmd "on_failure"
